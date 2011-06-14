@@ -23,7 +23,7 @@ public class SolverTest {
     }
 
     @Test
-    public void solvesVerySimpleCase() throws Exception {
+    public void solvesVerySimpleOneLinerCase() throws Exception {
         FieldState full = new FieldStateBuilder()
                 .row("1x")
             .build();
