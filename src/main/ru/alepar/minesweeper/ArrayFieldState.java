@@ -1,7 +1,5 @@
 package ru.alepar.minesweeper;
 
-import java.awt.*;
-
 public class ArrayFieldState implements FieldState {
 
     private final Cell[][] cells;
