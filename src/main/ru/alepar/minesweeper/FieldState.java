@@ -1,12 +1,11 @@
 package ru.alepar.minesweeper;
 
-public class FieldState {
+import java.awt.*;
 
-    private final Cell[][] cells;
+public interface FieldState {
+    int width();
 
-    public FieldState(Cell[][] cells) {
-        this.cells = cells;
-    }
+    int height();
 
-
+    Cell cellAt(Point p);
 }

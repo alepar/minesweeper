@@ -51,7 +51,7 @@ public class FieldStateBuilder {
             }
             i++;
         }
-        return new FieldState(cells);
+        return new ArrayFieldState(cells);
     }
 
     private static Cell translate(char c) {
