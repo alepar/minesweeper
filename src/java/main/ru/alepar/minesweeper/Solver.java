@@ -14,17 +14,21 @@ public class Solver {
     }
 
     public FieldState solve() {
-        Set<Limit> limits = createLimits();
-        limits = shuffleLimits(limits);
-        openDeterminedLimits(limits);
-        return fieldApi.getCurrentField();
+        try {
+            Set<Limit> limits = createLimits();
+            limits = shuffleLimits(limits);
+            openDeterminedLimits(limits);
+            return fieldApi.getCurrentField();
+        } catch (SteppedOnABomb e) {
+            throw new RuntimeException("solver has blown up", e);
+        }
     }
 
     private Set<Limit> shuffleLimits(Set<Limit> limits) {
         return limits;
     }
 
-    private void openDeterminedLimits(Set<Limit> limits) {
+    private void openDeterminedLimits(Set<Limit> limits) throws SteppedOnABomb {
         for (Limit limit : limits) {
             if(limit.min == 0 && limit.max == 0) {
                 for (Point p : limit.points) {

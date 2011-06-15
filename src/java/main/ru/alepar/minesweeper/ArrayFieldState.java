@@ -73,4 +73,9 @@ public class ArrayFieldState implements FieldState {
 
         return true;
     }
+
+    public ArrayFieldState mutate(Point p, Cell cell) {
+        cells[p.y][p.x] = cell;
+        return this;
+    }
 }

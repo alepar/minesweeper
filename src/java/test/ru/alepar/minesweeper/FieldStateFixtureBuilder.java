@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class FieldStateBuilder {
+public class FieldStateFixtureBuilder {
 
     private static final Map<Character, Cell> translateMap;
 
@@ -26,12 +26,12 @@ public class FieldStateBuilder {
 
     private final List<String> rows = new LinkedList<String>();
 
-    public FieldStateBuilder row(String row) {
+    public FieldStateFixtureBuilder row(String row) {
         rows.add(row);
         return this;
     }
 
-    public FieldState build() {
+    public ArrayFieldState build() {
         Integer rowLength = null;
         Cell[][] cells = null;
         int i = 0;
