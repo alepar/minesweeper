@@ -14,6 +14,10 @@ public final class Cell {
         this.value = value;
     }
 
+    public boolean isOpened() {
+        return value >= 0;
+    }
+
     public static Cell valueOf(int i) {
         return OPENED[i];
     }
