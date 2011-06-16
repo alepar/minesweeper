@@ -64,7 +64,7 @@ public class SolverTest {
     }
 
     @Test
-    public void solvesCaseWithWithIntersectingLimits() throws Exception {
+    public void solvesCaseWithIntersectingLimits() throws Exception {
         ArrayFieldState full = new FieldStateFixtureBuilder()
                 .row("12x2x2")
                 .row("x2122x")
