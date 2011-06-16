@@ -36,4 +36,24 @@ public final class Cell {
     public int hashCode() {
         return value;
     }
+
+    public char toChar() {
+        if (isOpened()) {
+            return (char) ((int) '0' + value);
+        }
+        if (this == Cell.BOMB) {
+            return 'x';
+        }
+        if (this == Cell.CLOSED) {
+            return '.';
+        }
+        throw new IllegalArgumentException("don't know how to translate this cell to char: " + this);
+    }
+
+    @Override
+    public String toString() {
+        return "Cell{" +
+                toChar() +
+                '}';
+    }
 }

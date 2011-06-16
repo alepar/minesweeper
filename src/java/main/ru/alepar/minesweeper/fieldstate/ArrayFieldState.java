@@ -89,23 +89,11 @@ public class ArrayFieldState implements FieldState {
         for (Cell[] row : cells) {
             stateString.append('\t');
             for (Cell cell : row) {
-                stateString.append(toChar(cell));
+                stateString.append(cell.toChar());
             }
             stateString.append('\n');
         }
         return "ArrayFieldState{\n" + stateString.toString() + '}';
     }
 
-    private char toChar(Cell cell) {
-        if (cell.isOpened()) {
-            return (char) ((int) '0' + cell.value);
-        }
-        if (cell == Cell.BOMB) {
-            return 'x';
-        }
-        if (cell == Cell.CLOSED) {
-            return '.';
-        }
-        throw new IllegalArgumentException("don't know how to translate this cell to char: " + cell);
-    }
 }
