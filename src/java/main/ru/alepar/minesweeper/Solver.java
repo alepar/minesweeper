@@ -3,6 +3,9 @@ package ru.alepar.minesweeper;
 import java.util.HashSet;
 import java.util.Set;
 
+import static ru.alepar.minesweeper.PointFilters.closedCellsOn;
+import static ru.alepar.minesweeper.PointFilters.filter;
+
 public class Solver {
 
     private final FieldApi fieldApi;
@@ -47,7 +50,8 @@ public class Solver {
         for(Point p: pointFactory.allPoints()) {
             Cell cell = fieldApi.getCurrentField().cellAt(p);
             if(cell.isOpened()) {
-                result.add(new Limit(pointFactory.adjacentTo(p), cell.value, cell.value));
+                Set<Point> closedNeighbours = filter(pointFactory.adjacentTo(p), closedCellsOn(fieldApi));
+                result.add(new Limit(closedNeighbours, cell.value, cell.value));
             }
         }
         return result;
