@@ -57,4 +57,23 @@ public class SolverTest {
 
         assertThat(state, Matchers.<FieldState>equalTo(full));
     }
+
+    @Test
+    public void solvesCaseWithWithIntersectingLimits() throws Exception {
+        ArrayFieldState full = new FieldStateFixtureBuilder()
+                .row("12x12x")
+                .row("x2122x")
+            .build();
+
+        ArrayFieldState start = new FieldStateFixtureBuilder()
+                .row("......")
+                .row(".2122.")
+            .build();
+
+        FieldApi fieldApi = new SimpleFieldApi(full, start);
+        Solver solver = new Solver(fieldApi);
+        FieldState state = solver.solve();
+
+        assertThat(state, Matchers.<FieldState>equalTo(full));
+    }
 }
