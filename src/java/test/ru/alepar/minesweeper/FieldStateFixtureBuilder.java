@@ -1,5 +1,8 @@
 package ru.alepar.minesweeper;
 
+import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
+import ru.alepar.minesweeper.model.Cell;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,12 +39,12 @@ public class FieldStateFixtureBuilder {
         Cell[][] cells = null;
         int i = 0;
         for (String row : rows) {
-            if(cells == null) {
+            if (cells == null) {
                 cells = new Cell[rows.size()][];
                 rowLength = row.length();
             }
 
-            if(rowLength != row.length()) {
+            if (rowLength != row.length()) {
                 throw new IllegalArgumentException("inconsistent row lengthes");
             }
             cells[i] = new Cell[rowLength];

@@ -1,4 +1,6 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.solver;
+
+import ru.alepar.minesweeper.model.Region;
 
 public class Limit {
 

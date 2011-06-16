@@ -1,4 +1,4 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.model;
 
 public interface FieldState {
     int width();

@@ -1,9 +1,15 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.solver;
 
-import java.util.*;
+import ru.alepar.minesweeper.core.PointFactory;
+import ru.alepar.minesweeper.model.*;
 
-import static ru.alepar.minesweeper.PointFilters.closedCellsOn;
-import static ru.alepar.minesweeper.PointFilters.filter;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import static ru.alepar.minesweeper.core.PointFilters.closedCellsOn;
+import static ru.alepar.minesweeper.core.PointFilters.filter;
 
 public class Solver {
 
@@ -32,7 +38,7 @@ public class Solver {
         do {
             limits = shuffledLimits;
             shuffledLimits = shuffleLimitsOneIteration(shuffledLimits);
-        } while(shuffledLimits.size() > limits.size());
+        } while (shuffledLimits.size() > limits.size());
 
         return shuffledLimits;
     }
@@ -56,16 +62,16 @@ public class Solver {
 
     private static Set<Limit> shuffleLimitsPair(Limit first, Limit second) {
 
-        if(first.region.contains(second.region)) {
+        if (first.region.contains(second.region)) {
             return subtractRegion(first, second);
         }
 
-        if(second.region.contains(first.region)) {
+        if (second.region.contains(first.region)) {
             return subtractRegion(second, first);
         }
 
         Region intersect = first.region.intersect(second.region);
-        if(!intersect.points().isEmpty()) {
+        if (!intersect.points().isEmpty()) {
             Set<Limit> result = new HashSet<Limit>();
             result.add(
                     new Limit(intersect,
@@ -110,11 +116,11 @@ public class Solver {
 
     private void openDeterminedLimits(Set<Limit> limits) throws SteppedOnABomb {
         for (Limit limit : limits) {
-            if(limit.min == 0 && limit.max == 0) {
+            if (limit.min == 0 && limit.max == 0) {
                 for (Point p : limit.region.points()) {
                     fieldApi.open(p);
                 }
-            } else if(limit.min == limit.max && limit.min == limit.region.points().size()) {
+            } else if (limit.min == limit.max && limit.min == limit.region.points().size()) {
                 for (Point p : limit.region.points()) {
                     fieldApi.markBomb(p);
                 }
@@ -124,9 +130,9 @@ public class Solver {
 
     private Set<Limit> createLimits() {
         Set<Limit> result = new HashSet<Limit>();
-        for(Point p: pointFactory.allPoints()) {
+        for (Point p : pointFactory.allPoints()) {
             Cell cell = fieldApi.getCurrentField().cellAt(p);
-            if(cell.isOpened()) {
+            if (cell.isOpened()) {
                 Set<Point> closedNeighbours = filter(pointFactory.adjacentTo(p), closedCellsOn(fieldApi));
                 result.add(new Limit(new Region(closedNeighbours), cell.value, cell.value));
             }

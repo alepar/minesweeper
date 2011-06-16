@@ -1,4 +1,6 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.core;
+
+import ru.alepar.minesweeper.model.Point;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,8 +17,8 @@ public class PointFactory {
 
     public Set<Point> allPoints() {
         Set<Point> result = new HashSet<Point>();
-        for (int x=0; x<width; x++) {
-            for (int y=0; y<height; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 result.add(new Point(x, y));
             }
         }

@@ -2,6 +2,11 @@ package ru.alepar.minesweeper;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import ru.alepar.minesweeper.core.SimpleFieldApi;
+import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
+import ru.alepar.minesweeper.model.FieldApi;
+import ru.alepar.minesweeper.model.FieldState;
+import ru.alepar.minesweeper.solver.Solver;
 
 import static org.junit.Assert.assertThat;
 
@@ -11,11 +16,11 @@ public class SolverTest {
     public void runsSimpleCaseWithoutExceptions() throws Exception {
         ArrayFieldState full = new FieldStateFixtureBuilder()
                 .row("1x")
-            .build();
+                .build();
 
         ArrayFieldState start = new FieldStateFixtureBuilder()
                 .row("1.")
-            .build();
+                .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
         Solver solver = new Solver(fieldApi);
@@ -26,11 +31,11 @@ public class SolverTest {
     public void solvesVerySimpleOneLinerCase() throws Exception {
         ArrayFieldState full = new FieldStateFixtureBuilder()
                 .row("1x")
-            .build();
+                .build();
 
         ArrayFieldState start = new FieldStateFixtureBuilder()
                 .row("1.")
-            .build();
+                .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
         Solver solver = new Solver(fieldApi);
@@ -44,12 +49,12 @@ public class SolverTest {
         ArrayFieldState full = new FieldStateFixtureBuilder()
                 .row("1xxx")
                 .row("1232")
-            .build();
+                .build();
 
         ArrayFieldState start = new FieldStateFixtureBuilder()
                 .row("1...")
                 .row("1232")
-            .build();
+                .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
         Solver solver = new Solver(fieldApi);
@@ -63,17 +68,17 @@ public class SolverTest {
         ArrayFieldState full = new FieldStateFixtureBuilder()
                 .row("12x2x2")
                 .row("x2122x")
-            .build();
+                .build();
 
         ArrayFieldState start = new FieldStateFixtureBuilder()
                 .row("......")
                 .row(".2122.")
-            .build();
+                .build();
 
         ArrayFieldState expected = new FieldStateFixtureBuilder()
                 .row(".2..x.")
                 .row(".2122.")
-            .build();
+                .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
         Solver solver = new Solver(fieldApi);

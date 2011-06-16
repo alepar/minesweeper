@@ -1,5 +1,8 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.core;
 
+
+import ru.alepar.minesweeper.model.FieldApi;
+import ru.alepar.minesweeper.model.Point;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -9,7 +12,7 @@ public class PointFilters {
     public static Set<Point> filter(Iterable<Point> points, Filter filter) {
         Set<Point> result = new HashSet<Point>();
         for (Point point : points) {
-            if(filter.accept(point)) {
+            if (filter.accept(point)) {
                 result.add(point);
             }
         }

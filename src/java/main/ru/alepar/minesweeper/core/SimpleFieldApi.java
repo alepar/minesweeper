@@ -1,4 +1,7 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.core;
+
+import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
+import ru.alepar.minesweeper.model.*;
 
 public class SimpleFieldApi implements FieldApi {
 
@@ -18,7 +21,7 @@ public class SimpleFieldApi implements FieldApi {
     @Override
     public void open(Point p) throws SteppedOnABomb {
         Cell cell = full.cellAt(p);
-        if(cell == Cell.BOMB) {
+        if (cell == Cell.BOMB) {
             throw new SteppedOnABomb(p);
         }
 
@@ -27,7 +30,7 @@ public class SimpleFieldApi implements FieldApi {
 
     @Override
     public void markBomb(Point p) {
-        if(current.cellAt(p).isOpened()) {
+        if (current.cellAt(p).isOpened()) {
             throw new RuntimeException("tried to mark as bomb alread open cell at " + p);
         }
         current = current.mutate(p, Cell.BOMB);

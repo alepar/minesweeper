@@ -1,4 +1,4 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.model;
 
 import java.util.Collections;
 import java.util.HashSet;

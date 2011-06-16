@@ -1,4 +1,8 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.fieldstate;
+
+import ru.alepar.minesweeper.model.Cell;
+import ru.alepar.minesweeper.model.FieldState;
+import ru.alepar.minesweeper.model.Point;
 
 public class ArrayFieldState implements FieldState {
 
@@ -25,14 +29,14 @@ public class ArrayFieldState implements FieldState {
     }
 
     private static void assertEqualWidth(Cell[][] cells) {
-        if(cells == null) {
+        if (cells == null) {
             throw new IllegalArgumentException("null cells are not permitted");
         }
-        if(cells.length < 1) {
+        if (cells.length < 1) {
             return;
         }
         for (int i = 1; i < cells.length; i++) {
-            if(cells[i-1].length != cells[i].length) {
+            if (cells[i - 1].length != cells[i].length) {
                 throw new IllegalArgumentException("inconsistent width in rows");
             }
         }
@@ -43,7 +47,7 @@ public class ArrayFieldState implements FieldState {
         int h = 0;
         for (Cell[] row : cells) {
             for (Cell cell : row) {
-                h = h*31 + cell.hashCode();
+                h = h * 31 + cell.hashCode();
             }
         }
         return h;
@@ -56,16 +60,16 @@ public class ArrayFieldState implements FieldState {
 
         ArrayFieldState that = (ArrayFieldState) o;
 
-        if(cells.length != that.cells.length) {
+        if (cells.length != that.cells.length) {
             return false;
         }
 
         for (int i = 0; i < cells.length; i++) {
-            if(cells[i].length != that.cells[i].length) {
+            if (cells[i].length != that.cells[i].length) {
                 return false;
             }
             for (int j = 0; j < cells[i].length; j++) {
-                if(!cells[i][j].equals(that.cells[i][j])) {
+                if (!cells[i][j].equals(that.cells[i][j])) {
                     return false;
                 }
             }
@@ -94,7 +98,7 @@ public class ArrayFieldState implements FieldState {
 
     private char toChar(Cell cell) {
         if (cell.isOpened()) {
-            return (char)((int)'0' + cell.value);
+            return (char) ((int) '0' + cell.value);
         }
         if (cell == Cell.BOMB) {
             return 'x';
