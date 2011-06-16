@@ -1,4 +1,4 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.testsupport;
 
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
 import ru.alepar.minesweeper.model.Cell;

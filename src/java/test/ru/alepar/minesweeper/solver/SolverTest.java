@@ -1,12 +1,12 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.solver;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import ru.alepar.minesweeper.testsupport.FieldStateFixtureBuilder;
 import ru.alepar.minesweeper.core.SimpleFieldApi;
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
 import ru.alepar.minesweeper.model.FieldApi;
 import ru.alepar.minesweeper.model.FieldState;
-import ru.alepar.minesweeper.solver.Solver;
 
 import static org.junit.Assert.assertThat;
 
