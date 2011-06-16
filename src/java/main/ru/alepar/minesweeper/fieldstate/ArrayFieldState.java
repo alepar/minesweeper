@@ -4,6 +4,8 @@ import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 
+import java.util.Arrays;
+
 public class ArrayFieldState implements FieldState {
 
     private final Cell[][] cells;
@@ -79,8 +81,12 @@ public class ArrayFieldState implements FieldState {
     }
 
     public ArrayFieldState mutate(Point p, Cell cell) {
-        cells[p.y][p.x] = cell;
-        return this;
+        Cell[][] clone = copyOf(cells);
+        for (int i = 0; i < clone.length; i++) {
+            clone[i] = copyOf(clone[i]);
+        }
+        clone[p.y][p.x] = cell;
+        return new ArrayFieldState(clone);
     }
 
     @Override
@@ -94,6 +100,10 @@ public class ArrayFieldState implements FieldState {
             stateString.append('\n');
         }
         return "ArrayFieldState{\n" + stateString.toString() + '}';
+    }
+
+    private static <T> T[] copyOf(T[] arr) {
+        return Arrays.copyOf(arr, arr.length);
     }
 
 }
