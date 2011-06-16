@@ -78,4 +78,30 @@ public class ArrayFieldState implements FieldState {
         cells[p.y][p.x] = cell;
         return this;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stateString = new StringBuilder();
+        for (int y = 0; y < cells.length; y++) {
+            stateString.append('\t');
+            for (int x = 0; x < cells[y].length; x++) {
+                stateString.append(toChar(cells[y][x]));
+            }
+            stateString.append('\n');
+        }
+        return "ArrayFieldState{\n" + stateString.toString() + '}';
+    }
+
+    private char toChar(Cell cell) {
+        if (cell.isOpened()) {
+            return (char)((int)'0' + cell.value);
+        }
+        if (cell == Cell.BOMB) {
+            return 'x';
+        }
+        if (cell == Cell.CLOSED) {
+            return '.';
+        }
+        throw new IllegalArgumentException("don't know how to translate this cell to char: " + cell);
+    }
 }
