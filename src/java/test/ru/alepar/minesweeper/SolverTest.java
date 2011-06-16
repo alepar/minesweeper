@@ -36,6 +36,25 @@ public class SolverTest {
         Solver solver = new Solver(fieldApi);
         FieldState state = solver.solve();
 
-        assertThat(state, Matchers.<FieldState>equalTo(start));
+        assertThat(state, Matchers.<FieldState>equalTo(full));
+    }
+
+    @Test
+    public void solvesCaseWithMixedOpenedClosedNeighbours() throws Exception {
+        ArrayFieldState full = new FieldStateFixtureBuilder()
+                .row("1xxx")
+                .row("1232")
+            .build();
+
+        ArrayFieldState start = new FieldStateFixtureBuilder()
+                .row("1...")
+                .row("1232")
+            .build();
+
+        FieldApi fieldApi = new SimpleFieldApi(full, start);
+        Solver solver = new Solver(fieldApi);
+        FieldState state = solver.solve();
+
+        assertThat(state, Matchers.<FieldState>equalTo(full));
     }
 }
