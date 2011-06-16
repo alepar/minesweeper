@@ -82,10 +82,10 @@ public class ArrayFieldState implements FieldState {
     @Override
     public String toString() {
         StringBuilder stateString = new StringBuilder();
-        for (int y = 0; y < cells.length; y++) {
+        for (Cell[] row : cells) {
             stateString.append('\t');
-            for (int x = 0; x < cells[y].length; x++) {
-                stateString.append(toChar(cells[y][x]));
+            for (Cell cell : row) {
+                stateString.append(toChar(cell));
             }
             stateString.append('\n');
         }

@@ -19,11 +19,8 @@ public class Limit {
 
         Limit limit = (Limit) o;
 
-        if (max != limit.max) return false;
-        if (min != limit.min) return false;
-        if (!region.equals(limit.region)) return false;
+        return max == limit.max && min == limit.min && region.equals(limit.region);
 
-        return true;
     }
 
     @Override
