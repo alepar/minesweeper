@@ -13,21 +13,6 @@ import static org.junit.Assert.assertThat;
 public class SolverTest {
 
     @Test
-    public void runsSimpleCaseWithoutExceptions() throws Exception {
-        ArrayFieldState full = new FieldStateFixtureBuilder()
-                .row("1x")
-                .build();
-
-        ArrayFieldState start = new FieldStateFixtureBuilder()
-                .row("1.")
-                .build();
-
-        FieldApi fieldApi = new SimpleFieldApi(full, start);
-        Solver solver = new Solver(fieldApi);
-        solver.solve();
-    }
-
-    @Test
     public void solvesVerySimpleOneLinerCase() throws Exception {
         ArrayFieldState full = new FieldStateFixtureBuilder()
                 .row("1x")
