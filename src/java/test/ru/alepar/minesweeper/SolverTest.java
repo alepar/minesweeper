@@ -13,15 +13,17 @@ import static org.junit.Assert.assertThat;
 public class SolverTest {
 
     @Test
-    public void solvesCaseWhereTwoIterationsAreNeeded() throws Exception {
+    public void solvesCaseWhereFourIterationsNeededToSolve() throws Exception {
         ArrayFieldState full = new FieldStateFixtureBuilder()
-                .row("12x2x2")
-                .row("x2122x")
+                .row("1x2")
+                .row("12x")
+                .row(" 11")
                 .build();
 
         ArrayFieldState start = new FieldStateFixtureBuilder()
-                .row("......")
-                .row(".2122.")
+                .row("...")
+                .row("..x")
+                .row("..1")
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
