@@ -8,8 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import static ru.alepar.minesweeper.core.PointFilters.closedCellsOn;
-import static ru.alepar.minesweeper.core.PointFilters.filter;
+import static ru.alepar.minesweeper.core.PointFilters.*;
 
 public class Solver {
 
@@ -134,7 +133,9 @@ public class Solver {
             Cell cell = fieldApi.getCurrentField().cellAt(p);
             if (cell.isOpened()) {
                 Set<Point> closedNeighbours = filter(pointFactory.adjacentTo(p), closedCellsOn(fieldApi));
-                result.add(new Limit(new Region(closedNeighbours), cell.value, cell.value));
+                Set<Point> discoveredBombNeighbours = filter(pointFactory.adjacentTo(p), bombCellsOn(fieldApi));
+                int bombsLeftUndiscovered = cell.value - discoveredBombNeighbours.size();
+                result.add(new Limit(new Region(closedNeighbours).subtract(new Region(discoveredBombNeighbours)), bombsLeftUndiscovered, bombsLeftUndiscovered));
             }
         }
         return result;

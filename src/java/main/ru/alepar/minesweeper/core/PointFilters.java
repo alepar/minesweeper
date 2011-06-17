@@ -1,6 +1,7 @@
 package ru.alepar.minesweeper.core;
 
 
+import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.FieldApi;
 import ru.alepar.minesweeper.model.Point;
 
@@ -24,6 +25,15 @@ public class PointFilters {
             @Override
             public boolean accept(Point p) {
                 return !api.getCurrentField().cellAt(p).isOpened();
+            }
+        };
+    }
+
+    public static Filter bombCellsOn(final FieldApi api) {
+        return new Filter() {
+            @Override
+            public boolean accept(Point p) {
+                return Cell.BOMB == api.getCurrentField().cellAt(p);
             }
         };
     }

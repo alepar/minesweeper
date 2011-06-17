@@ -100,7 +100,7 @@ public class SolverTest {
                 .build();
 
         ArrayFieldState expected = new FieldStateFixtureBuilder()
-                .row("111..")
+                .row("111x1")
                 .row("x1111")
                 .build();
 
