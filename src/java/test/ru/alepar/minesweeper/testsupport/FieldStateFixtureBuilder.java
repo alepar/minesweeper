@@ -58,6 +58,10 @@ public class FieldStateFixtureBuilder {
     }
 
     private static Cell translate(char c) {
-        return translateMap.get(c);
+        Cell cell = translateMap.get(c);
+        if (cell != null) {
+            return cell;
+        }
+        throw new IllegalArgumentException("cannot translate char = " + c);
     }
 }
