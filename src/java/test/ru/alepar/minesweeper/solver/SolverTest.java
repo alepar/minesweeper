@@ -86,4 +86,28 @@ public class SolverTest {
 
         assertThat(state, Matchers.<FieldState>equalTo(expected));
     }
+
+    @Test
+    public void solvesCaseWithOneOfBombsAlreadyUncovered() throws Exception {
+        ArrayFieldState full = new FieldStateFixtureBuilder()
+                .row("111x1")
+                .row("x1111")
+                .build();
+
+        ArrayFieldState start = new FieldStateFixtureBuilder()
+                .row(".....")
+                .row("x1111")
+                .build();
+
+        ArrayFieldState expected = new FieldStateFixtureBuilder()
+                .row("111..")
+                .row("x1111")
+                .build();
+
+        FieldApi fieldApi = new SimpleFieldApi(full, start);
+        Solver solver = new Solver(fieldApi);
+        FieldState state = solver.solve();
+
+        assertThat(state, Matchers.<FieldState>equalTo(expected));
+    }
 }
