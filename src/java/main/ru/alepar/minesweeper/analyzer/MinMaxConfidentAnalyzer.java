@@ -1,4 +1,4 @@
-package ru.alepar.minesweeper.solver;
+package ru.alepar.minesweeper.analyzer;
 
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.model.*;
@@ -10,16 +10,17 @@ import java.util.Set;
 
 import static ru.alepar.minesweeper.core.PointFilters.*;
 
-public class Solver {
+public class MinMaxConfidentAnalyzer implements FieldAnalyzer {
 
     private final FieldApi fieldApi;
     private final PointFactory pointFactory;
 
-    public Solver(FieldApi fieldApi) {
+    public MinMaxConfidentAnalyzer(FieldApi fieldApi) {
         this.fieldApi = fieldApi;
         pointFactory = new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height());
     }
 
+    @Override
     public FieldState solve() {
         try {
             Set<Limit> limits = createLimits();
@@ -27,7 +28,7 @@ public class Solver {
             openDeterminedLimits(limits);
             return fieldApi.getCurrentField();
         } catch (SteppedOnABomb e) {
-            throw new RuntimeException("solver has blown up", e);
+            throw new RuntimeException("analyzer has blown up", e);
         }
     }
 

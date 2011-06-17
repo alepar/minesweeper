@@ -1,4 +1,4 @@
-package ru.alepar.minesweeper.solver;
+package ru.alepar.minesweeper.analyzer;
 
 import ru.alepar.minesweeper.model.Region;
 

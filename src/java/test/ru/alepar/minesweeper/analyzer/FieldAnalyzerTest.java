@@ -1,4 +1,4 @@
-package ru.alepar.minesweeper.solver;
+package ru.alepar.minesweeper.analyzer;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -10,7 +10,7 @@ import ru.alepar.minesweeper.model.FieldState;
 
 import static org.junit.Assert.assertThat;
 
-public class SolverTest {
+public class FieldAnalyzerTest {
 
     @Test
     public void solvesVerySimpleOneLinerCase() throws Exception {
@@ -23,8 +23,8 @@ public class SolverTest {
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        Solver solver = new Solver(fieldApi);
-        FieldState state = solver.solve();
+        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(fieldApi);
+        FieldState state = analyzer.solve();
 
         assertThat(state, Matchers.<FieldState>equalTo(full));
     }
@@ -42,8 +42,8 @@ public class SolverTest {
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        Solver solver = new Solver(fieldApi);
-        FieldState state = solver.solve();
+        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(fieldApi);
+        FieldState state = analyzer.solve();
 
         assertThat(state, Matchers.<FieldState>equalTo(full));
     }
@@ -66,8 +66,8 @@ public class SolverTest {
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        Solver solver = new Solver(fieldApi);
-        FieldState state = solver.solve();
+        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(fieldApi);
+        FieldState state = analyzer.solve();
 
         assertThat(state, Matchers.<FieldState>equalTo(expected));
     }
@@ -90,8 +90,8 @@ public class SolverTest {
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        Solver solver = new Solver(fieldApi);
-        FieldState state = solver.solve();
+        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(fieldApi);
+        FieldState state = analyzer.solve();
 
         assertThat(state, Matchers.<FieldState>equalTo(expected));
     }
