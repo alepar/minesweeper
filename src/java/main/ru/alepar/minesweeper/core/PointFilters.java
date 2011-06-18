@@ -2,7 +2,7 @@ package ru.alepar.minesweeper.core;
 
 
 import ru.alepar.minesweeper.model.Cell;
-import ru.alepar.minesweeper.model.FieldApi;
+import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 
 import java.util.HashSet;
@@ -20,20 +20,20 @@ public class PointFilters {
         return result;
     }
 
-    public static Filter closedCellsOn(final FieldApi api) {
+    public static Filter closedCellsOn(final FieldState field) {
         return new Filter() {
             @Override
             public boolean accept(Point p) {
-                return !api.getCurrentField().cellAt(p).isOpened();
+                return !field.cellAt(p).isOpened();
             }
         };
     }
 
-    public static Filter bombCellsOn(final FieldApi api) {
+    public static Filter bombCellsOn(final FieldState field) {
         return new Filter() {
             @Override
             public boolean accept(Point p) {
-                return Cell.BOMB == api.getCurrentField().cellAt(p);
+                return Cell.BOMB == field.cellAt(p);
             }
         };
     }

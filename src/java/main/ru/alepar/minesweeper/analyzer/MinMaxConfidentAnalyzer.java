@@ -1,7 +1,10 @@
 package ru.alepar.minesweeper.analyzer;
 
 import ru.alepar.minesweeper.core.PointFactory;
-import ru.alepar.minesweeper.model.*;
+import ru.alepar.minesweeper.model.Cell;
+import ru.alepar.minesweeper.model.FieldState;
+import ru.alepar.minesweeper.model.Point;
+import ru.alepar.minesweeper.model.Region;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,24 +15,19 @@ import static ru.alepar.minesweeper.core.PointFilters.*;
 
 public class MinMaxConfidentAnalyzer implements FieldAnalyzer {
 
-    private final FieldApi fieldApi;
     private final PointFactory pointFactory;
+    private final FieldState currentField;
 
-    public MinMaxConfidentAnalyzer(FieldApi fieldApi) {
-        this.fieldApi = fieldApi;
-        pointFactory = new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height());
+    public MinMaxConfidentAnalyzer(PointFactory pointFactory, FieldState currentField) {
+        this.pointFactory = pointFactory;
+        this.currentField = currentField;
     }
 
     @Override
-    public FieldState solve() {
-        try {
-            Set<Limit> limits = createLimits();
-            limits = shuffleLimits(limits);
-            openDeterminedLimits(limits);
-            return fieldApi.getCurrentField();
-        } catch (SteppedOnABomb e) {
-            throw new RuntimeException("analyzer has blown up", e);
-        }
+    public Result solve() {
+        Set<Limit> limits = createLimits();
+        limits = shuffleLimits(limits);
+        return openDeterminedLimits(limits);
     }
 
     private static Set<Limit> shuffleLimits(Set<Limit> limits) {
@@ -114,27 +112,30 @@ public class MinMaxConfidentAnalyzer implements FieldAnalyzer {
         return Math.min(src.max, dst.points().size());
     }
 
-    private void openDeterminedLimits(Set<Limit> limits) throws SteppedOnABomb {
+    private Result openDeterminedLimits(Set<Limit> limits) {
+        Set<Point> toOpen = new HashSet<Point>();
+        Set<Point> toMark = new HashSet<Point>();
         for (Limit limit : limits) {
             if (limit.min == 0 && limit.max == 0) {
                 for (Point p : limit.region.points()) {
-                    fieldApi.open(p);
+                    toOpen.add(p);
                 }
             } else if (limit.min == limit.max && limit.min == limit.region.points().size()) {
                 for (Point p : limit.region.points()) {
-                    fieldApi.markBomb(p);
+                    toMark.add(p);
                 }
             }
         }
+        return new Result(toMark, toOpen);
     }
 
     private Set<Limit> createLimits() {
         Set<Limit> result = new HashSet<Limit>();
         for (Point p : pointFactory.allPoints()) {
-            Cell cell = fieldApi.getCurrentField().cellAt(p);
+            Cell cell = currentField.cellAt(p);
             if (cell.isOpened()) {
-                Set<Point> closedNeighbours = filter(pointFactory.adjacentTo(p), closedCellsOn(fieldApi));
-                Set<Point> discoveredBombNeighbours = filter(pointFactory.adjacentTo(p), bombCellsOn(fieldApi));
+                Set<Point> closedNeighbours = filter(pointFactory.adjacentTo(p), closedCellsOn(currentField));
+                Set<Point> discoveredBombNeighbours = filter(pointFactory.adjacentTo(p), bombCellsOn(currentField));
                 int bombsLeftUndiscovered = cell.value - discoveredBombNeighbours.size();
                 result.add(new Limit(new Region(closedNeighbours).subtract(new Region(discoveredBombNeighbours)), bombsLeftUndiscovered, bombsLeftUndiscovered));
             }

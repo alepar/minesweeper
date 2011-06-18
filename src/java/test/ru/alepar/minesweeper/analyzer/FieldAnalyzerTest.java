@@ -2,11 +2,12 @@ package ru.alepar.minesweeper.analyzer;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import ru.alepar.minesweeper.testsupport.FieldStateFixtureBuilder;
+import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.core.SimpleFieldApi;
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
 import ru.alepar.minesweeper.model.FieldApi;
 import ru.alepar.minesweeper.model.FieldState;
+import ru.alepar.minesweeper.testsupport.FieldStateFixtureBuilder;
 
 import static org.junit.Assert.assertThat;
 
@@ -23,8 +24,9 @@ public class FieldAnalyzerTest {
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(fieldApi);
-        FieldState state = analyzer.solve();
+        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ResultExecutor executor = new ResultExecutor(fieldApi);
+        FieldState state = executor.execute(analyzer.solve());
 
         assertThat(state, Matchers.<FieldState>equalTo(full));
     }
@@ -42,8 +44,9 @@ public class FieldAnalyzerTest {
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(fieldApi);
-        FieldState state = analyzer.solve();
+        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ResultExecutor executor = new ResultExecutor(fieldApi);
+        FieldState state = executor.execute(analyzer.solve());
 
         assertThat(state, Matchers.<FieldState>equalTo(full));
     }
@@ -66,8 +69,9 @@ public class FieldAnalyzerTest {
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(fieldApi);
-        FieldState state = analyzer.solve();
+        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ResultExecutor executor = new ResultExecutor(fieldApi);
+        FieldState state = executor.execute(analyzer.solve());
 
         assertThat(state, Matchers.<FieldState>equalTo(expected));
     }
@@ -90,8 +94,9 @@ public class FieldAnalyzerTest {
                 .build();
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(fieldApi);
-        FieldState state = analyzer.solve();
+        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ResultExecutor executor = new ResultExecutor(fieldApi);
+        FieldState state = executor.execute(analyzer.solve());
 
         assertThat(state, Matchers.<FieldState>equalTo(expected));
     }
