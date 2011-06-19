@@ -37,7 +37,7 @@ public class SolverTest {
     }
 
     @Test
-    public void solvesRandomMinesweeperMediumPreopenedCase() throws Exception {
+    public void solvesMinesweeperMediumPreopenedCase() throws Exception {
         ArrayFieldState fullField = new FieldStateFixtureBuilder()
                 .row("2x1  1xx1   112x")
                 .row("x21  2331   1x21")
@@ -55,6 +55,37 @@ public class SolverTest {
                 .row("1113x21122x112x2")
                 .row(" 123211x1111 13x")
                 .row(" 1xx1 111     2x")
+            .build();
+
+        ArrayFieldState startField = new FieldPreopener().preopen(fullField);
+
+        FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
+
+        Solver solver = new Solver(fieldApi);
+        FieldState state = solver.solve();
+
+        assertThat(state, Matchers.<FieldState>equalTo(fullField ));
+    }
+
+    @Test
+    public void solvesMinesweeperExpertSizedButWithSmallerAmountOfBombsPreopenedCase() throws Exception {
+        ArrayFieldState fullField = new FieldStateFixtureBuilder()
+                .row("   1x1    11112x3x2 1111x22x1 ")
+                .row("   11211124x22x33x312x223x211 ")
+                .row("11   1x11xxx22x3222x212x321   ")
+                .row("x1   11123432212x1111 12x1 111")
+                .row("11      2x21x1 111   11211 1x2")
+                .row("      113x3332    1111x1 1122x")
+                .row("    123x212xx1    2x323212x211")
+                .row("11  2xx21 1332 1112x3x2x12x311")
+                .row("x1  2x31 112x1 1x22121211112x1")
+                .row("11  111 12x322 12x1 1222111332")
+                .row("        2x43x21 111 1xx3x11xx1")
+                .row("11  111 3xx22x111111234x212342")
+                .row("x1  1x1 3x411111x11x22x21 1x2x")
+                .row("331122114x3    12222x211113231")
+                .row("xx11x212xx2 111 2x2223112x3x1 ")
+                .row("22112x12x31 1x1 2x21x2x12x311 ")
             .build();
 
         ArrayFieldState startField = new FieldPreopener().preopen(fullField);
