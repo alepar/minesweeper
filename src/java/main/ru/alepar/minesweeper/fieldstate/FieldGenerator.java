@@ -1,4 +1,4 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.fieldstate;
 
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;

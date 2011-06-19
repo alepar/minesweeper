@@ -1,13 +1,10 @@
-package ru.alepar.minesweeper;
+package ru.alepar.minesweeper.fieldstate;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
-
-import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -40,7 +37,7 @@ public class FieldGeneratorTest {
         assertThat(bombCount, equalTo(BOMBS));
     }
 
-    @Test
+    @Test @SuppressWarnings({"unchecked"})
     public void makesFieldFullyPopulated() throws Exception {
         for (int y=0; y<field.height(); y++) {
             for (int x=0; x<field.width(); x++) {

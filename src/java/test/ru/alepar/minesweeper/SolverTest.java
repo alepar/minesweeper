@@ -4,6 +4,8 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import ru.alepar.minesweeper.core.SimpleFieldApi;
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
+import ru.alepar.minesweeper.fieldstate.FieldGenerator;
+import ru.alepar.minesweeper.fieldstate.FieldPreopener;
 import ru.alepar.minesweeper.model.FieldApi;
 import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.testsupport.FieldStateFixtureBuilder;
