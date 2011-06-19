@@ -34,4 +34,16 @@ public class SolverTest {
         assertThat(state, Matchers.<FieldState>equalTo(full));
     }
 
+    @Test
+    public void solvesRandomMinesweeperMediumPreopenedCase() throws Exception {
+        ArrayFieldState fullField = new FieldGenerator(16, 16, 40).generate();
+        ArrayFieldState startField = new FieldPreopener().preopen(fullField);
+
+        FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
+
+        Solver solver = new Solver(fieldApi);
+        FieldState state = solver.solve();
+
+        assertThat(state, Matchers.<FieldState>equalTo(fullField ));
+    }
 }
