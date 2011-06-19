@@ -1,5 +1,6 @@
 package ru.alepar.minesweeper;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.model.Cell;
@@ -44,7 +45,7 @@ public class FieldGeneratorTest {
         for (int y=0; y<field.height(); y++) {
             for (int x=0; x<field.width(); x++) {
                 Cell cell = field.cellAt(new Point(x, y));
-                assertThat(cell, not(equalTo(Cell.CLOSED)));
+                assertThat(cell, allOf(not(equalTo(Cell.CLOSED)), notNullValue()));
             }
         }
     }
