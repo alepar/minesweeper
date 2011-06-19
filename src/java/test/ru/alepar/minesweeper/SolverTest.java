@@ -39,6 +39,9 @@ public class SolverTest {
         ArrayFieldState fullField = new FieldGenerator(16, 16, 40).generate();
         ArrayFieldState startField = new FieldPreopener().preopen(fullField);
 
+        System.out.println(fullField.toString());
+        System.out.println(startField.toString());
+
         FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
 
         Solver solver = new Solver(fieldApi);
