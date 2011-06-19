@@ -38,11 +38,26 @@ public class SolverTest {
 
     @Test
     public void solvesRandomMinesweeperMediumPreopenedCase() throws Exception {
-        ArrayFieldState fullField = new FieldGenerator(16, 16, 40).generate();
-        ArrayFieldState startField = new FieldPreopener().preopen(fullField);
+        ArrayFieldState fullField = new FieldStateFixtureBuilder()
+                .row("2x1  1xx1   112x")
+                .row("x21  2331   1x21")
+                .row("11   1x11121211 ")
+                .row("1211 1222x3x1   ")
+                .row("x2x1123x33x21 11")
+                .row("12111xx22x33222x")
+                .row("    122112x2xx21")
+                .row("      122212332 ")
+                .row("    112xx1112x1 ")
+                .row("    1x22211x2121")
+                .row("  11211   111 1x")
+                .row("112x31  111 1121")
+                .row("x12xx2  1x211x21")
+                .row("1113x21122x112x2")
+                .row(" 123211x1111 13x")
+                .row(" 1xx1 111     2x")
+            .build();
 
-        System.out.println(fullField.toString());
-        System.out.println(startField.toString());
+        ArrayFieldState startField = new FieldPreopener().preopen(fullField);
 
         FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
 
