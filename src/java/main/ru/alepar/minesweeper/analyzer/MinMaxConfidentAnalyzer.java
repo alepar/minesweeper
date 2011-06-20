@@ -120,7 +120,7 @@ public class MinMaxConfidentAnalyzer implements FieldAnalyzer {
                 for (Point p : limit.region.points()) {
                     toOpen.add(p);
                 }
-            } else if (limit.min == limit.max && limit.min == limit.region.points().size()) {
+            } else if (limit.min == limit.region.points().size()) {
                 for (Point p : limit.region.points()) {
                     toMark.add(p);
                 }
