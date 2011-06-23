@@ -12,6 +12,18 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>3.3.0</version>
+            <classifier>platform</classifier>
+        </dependency>
+
         <!-- These dependencies are here just for enabling logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -79,11 +91,23 @@
     </properties>
 
     <repositories>
-        <!-- We go to mvnsearch.org after latest GAE SDK artifacts -->
         <repository>
             <id>mvnsearch.org</id>
             <name>MVN Search</name>
             <url>http://www.mvnsearch.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>java.net</id>
+            <name>java.net</name>
+            <url>http://download.java.net/maven/2</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
