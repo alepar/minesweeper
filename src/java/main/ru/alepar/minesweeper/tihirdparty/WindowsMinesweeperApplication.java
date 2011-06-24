@@ -9,51 +9,49 @@ import java.util.Arrays;
 
 public class WindowsMinesweeperApplication implements GameApplication {
 
+    private static final User32 USER32 = (User32) Native.loadLibrary("user32", User32.class, W32APIOptions.DEFAULT_OPTIONS);
+    private static final String WINMINE_WINDOW_CAPTION = "Сапер";
 
     public interface User32 extends StdCallLibrary {
-        User32 INSTANCE = (User32) Native.loadLibrary("user32", User32.class,
-                W32APIOptions.DEFAULT_OPTIONS);
-
         HWND FindWindow(String lpClassName, String lpWindowName);
-
         int GetWindowRect(HWND handle, int[] rect);
     }
 
-    public static int[] getRect(String windowName) throws WindowNotFoundException,
-            GetWindowRectException {
-        HWND hwnd = User32.INSTANCE.FindWindow(null, windowName);
+    public static int[] getRect(String windowName) throws NativeException {
+        HWND hwnd = USER32.FindWindow(null, windowName);
         if (hwnd == null) {
-            throw new WindowNotFoundException("", windowName);
+            throw new NativeException("couldnot find window named: " + windowName);
         }
 
         int[] rect = {0, 0, 0, 0};
-        int result = User32.INSTANCE.GetWindowRect(hwnd, rect);
+        int result = USER32.GetWindowRect(hwnd, rect);
         if (result == 0) {
-            throw new GetWindowRectException(windowName);
+            throw new NativeException("failed to get coordinates for window named: " + windowName);
         }
         return rect;
     }
 
-    @SuppressWarnings("serial")
-    public static class WindowNotFoundException extends Exception {
-        public WindowNotFoundException(String className, String windowName) {
-            super(String.format("Window null for className: %s; windowName: %s",
-                    className, windowName));
-        }
-    }
+    public static class NativeException extends Exception {
 
-    @SuppressWarnings("serial")
-    public static class GetWindowRectException extends Exception {
-        public GetWindowRectException(String windowName) {
-            super("Window Rect not found for " + windowName);
+        public NativeException() {
+        }
+
+        public NativeException(String message) {
+            super(message);
+        }
+
+        public NativeException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public NativeException(Throwable cause) {
+            super(cause);
         }
     }
 
     public static void main(String[] args) throws Exception {
-        String windowName = "Document - WordPad";
-        int[] rect;
-        rect = getRect(windowName);
-        System.out.printf("The corner locations for the window \"%s\" are %s", windowName, Arrays.toString(rect));
+        int[] rect = getRect(WINMINE_WINDOW_CAPTION);
+        System.out.printf("The corner locations for the window \"%s\" are %s", WINMINE_WINDOW_CAPTION, Arrays.toString(rect));
     }
 
 }
