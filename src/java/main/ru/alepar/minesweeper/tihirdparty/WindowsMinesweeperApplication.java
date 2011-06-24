@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class WindowsMinesweeperApplication implements GameApplication {
 
     private static final User32 USER32 = (User32) Native.loadLibrary("user32", User32.class, W32APIOptions.DEFAULT_OPTIONS);
-    private static final String WINMINE_WINDOW_CAPTION = "Сапер";
+    private static final String WINMINE_WINDOW_CAPTION = "Minesweeper";
 
     public interface User32 extends StdCallLibrary {
         HWND FindWindow(String lpClassName, String lpWindowName);
@@ -29,24 +29,6 @@ public class WindowsMinesweeperApplication implements GameApplication {
             throw new NativeException("failed to get coordinates for window named: " + windowName);
         }
         return rect;
-    }
-
-    public static class NativeException extends Exception {
-
-        public NativeException() {
-        }
-
-        public NativeException(String message) {
-            super(message);
-        }
-
-        public NativeException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public NativeException(Throwable cause) {
-            super(cause);
-        }
     }
 
     public static void main(String[] args) throws Exception {
