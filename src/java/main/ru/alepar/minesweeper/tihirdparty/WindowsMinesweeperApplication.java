@@ -5,6 +5,10 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Arrays;
 
 public class WindowsMinesweeperApplication implements GameApplication {
@@ -34,6 +38,9 @@ public class WindowsMinesweeperApplication implements GameApplication {
     public static void main(String[] args) throws Exception {
         int[] rect = getRect(WINMINE_WINDOW_CAPTION);
         System.out.printf("The corner locations for the window \"%s\" are %s", WINMINE_WINDOW_CAPTION, Arrays.toString(rect));
+        Robot robot = new Robot();
+        BufferedImage bi = robot.createScreenCapture(new Rectangle(rect[0], rect[1], rect[2]-rect[0], rect[3]-rect[1]));
+        ImageIO.write(bi, "png", new File("d:/minesweeper.png"));
     }
 
 }
