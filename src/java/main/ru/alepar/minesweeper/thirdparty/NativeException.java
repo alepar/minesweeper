@@ -1,4 +1,4 @@
-package ru.alepar.minesweeper.tihirdparty;
+package ru.alepar.minesweeper.thirdparty;
 
 public class NativeException extends Exception {
 
