@@ -5,11 +5,9 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.Arrays;
 
 public class WinmineApplication {
 
@@ -20,21 +18,16 @@ public class WinmineApplication {
     private HWND windowDescriptor;
 
     private interface User32 extends StdCallLibrary {
+
         HWND FindWindow(String lpClassName, String lpWindowName);
         int GetWindowRect(HWND handle, int[] rect);
         long SendMessageA(HWND hWnd, int msg, int num1, int num2);
     }
-
-    private static int[] getRect(String windowName) throws NativeException {
-        HWND hwnd = USER32.FindWindow(null, windowName);
-        if (hwnd == null) {
-            throw new NativeException("couldnot find window named: " + windowName);
-        }
-
+    private int[] getRect() throws NativeException {
         int[] rect = {0, 0, 0, 0};
-        int result = USER32.GetWindowRect(hwnd, rect);
+        int result = USER32.GetWindowRect(windowDescriptor, rect);
         if (result == 0) {
-            throw new NativeException("failed to get coordinates for window named: " + windowName);
+            throw new NativeException("failed to get coordinates");
         }
         return rect;
     }
@@ -45,7 +38,17 @@ public class WinmineApplication {
         windowDescriptor = findWinmineWindow();
     }
 
-    public void close() throws NativeException {
+    public BufferedImage getScreenshot() throws NativeException {
+        int[] rect = getRect();
+        try {
+            Robot robot = new Robot();
+            return robot.createScreenCapture(new Rectangle(rect[0], rect[1], rect[2] - rect[0], rect[3] - rect[1]));
+        } catch (AWTException e) {
+            throw new RuntimeException("Robot failed to take screenshot", e);
+        }
+    }
+
+    public void close() {
         USER32.SendMessageA(windowDescriptor, WM_CLOSE, 0, 0);
         while(findWinmineWindow() != null) { sleep(); }
     }
@@ -106,14 +109,6 @@ public class WinmineApplication {
         } finally {
             is.close();
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        int[] rect = getRect(WINMINE_WINDOW_CAPTION);
-        System.out.printf("The corner locations for the window \"%s\" are %s", WINMINE_WINDOW_CAPTION, Arrays.toString(rect));
-        Robot robot = new Robot();
-        BufferedImage bi = robot.createScreenCapture(new Rectangle(rect[0], rect[1], rect[2] - rect[0], rect[3] - rect[1]));
-        ImageIO.write(bi, "png", new File("d:/minesweeper.png"));
     }
 
 }

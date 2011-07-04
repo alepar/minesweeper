@@ -13,9 +13,21 @@ public class WinmineApplicationTest {
         assertThat("please close all minesweepers before executing this test", WinmineApplication.findWinmineWindow(), nullValue());
 
         WinmineApplication app = new WinmineApplication();
-        assertThat(WinmineApplication.findWinmineWindow(), notNullValue());
-        app.close();
+        try {
+            assertThat(WinmineApplication.findWinmineWindow(), notNullValue());
+        } finally {
+            app.close();
+        }
         assertThat(WinmineApplication.findWinmineWindow(), nullValue());
     }
 
+    @Test
+    public void suppliesNotNullWindowScreenshot() throws Exception {
+        WinmineApplication app = new WinmineApplication();
+        try {
+            assertThat(app.getScreenshot(), notNullValue());
+        } finally {
+            app.close();
+        }
+    }
 }
