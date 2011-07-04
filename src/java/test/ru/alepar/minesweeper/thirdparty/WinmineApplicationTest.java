@@ -14,6 +14,9 @@ import static ru.alepar.minesweeper.testsupport.OS.WINDOWS;
 @RunWith(OsSpecificRespectingClassRunner.class)
 public class WinmineApplicationTest {
 
+    @Test
+    public void dummySoThatClassRunnerDoesNotComplain() throws Exception { /*do not remove*/ }
+
     @Test(timeout = 2000L) @DesignedFor(WINDOWS)
     public void startsAndClosesApplicationWithoutExceptions() throws Exception {
         WinmineApplication app = new WinmineApplication();
