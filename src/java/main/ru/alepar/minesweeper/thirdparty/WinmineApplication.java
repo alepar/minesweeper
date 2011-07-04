@@ -33,9 +33,16 @@ public class WinmineApplication {
     }
 
     public WinmineApplication() {
+        assertThatNoMinesweepersAreRunning();
         exec(unpackWinmine());
         while(findWinmineWindow() == null) { sleep(); }
         windowDescriptor = findWinmineWindow();
+    }
+
+    private void assertThatNoMinesweepersAreRunning() {
+        if (findWinmineWindow() != null) {
+            throw new RuntimeException("another minesweeper is already running");
+        }
     }
 
     public BufferedImage getScreenshot() throws NativeException {

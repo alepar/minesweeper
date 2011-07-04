@@ -10,8 +10,6 @@ public class WinmineApplicationTest {
 
     @Test(timeout = 2000L)
     public void startsAndClosesApplicationWithoutExceptions() throws Exception {
-        assertThat("please close all minesweepers before executing this test", WinmineApplication.findWinmineWindow(), nullValue());
-
         WinmineApplication app = new WinmineApplication();
         try {
             assertThat(WinmineApplication.findWinmineWindow(), notNullValue());
