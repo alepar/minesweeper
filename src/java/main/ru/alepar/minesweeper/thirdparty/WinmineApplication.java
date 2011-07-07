@@ -33,13 +33,13 @@ public class WinmineApplication {
     }
 
     public WinmineApplication() {
-        assertThatNoMinesweepersAreRunning();
+        assertThereAreNoMinesweepersRunning();
         exec(unpackWinmine());
         while(findWinmineWindow() == null) { sleep(); }
         windowDescriptor = findWinmineWindow();
     }
 
-    private void assertThatNoMinesweepersAreRunning() {
+    private void assertThereAreNoMinesweepersRunning() {
         if (findWinmineWindow() != null) {
             throw new RuntimeException("another minesweeper is already running");
         }
