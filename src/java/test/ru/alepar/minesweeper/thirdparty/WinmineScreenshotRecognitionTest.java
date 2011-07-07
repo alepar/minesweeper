@@ -28,4 +28,17 @@ public class WinmineScreenshotRecognitionTest {
         WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
         assertThat(recognition.topLeft(), equalTo(new WinmineScreenshotRecognition.Coords(15, 104)));
     }
+
+    @Test
+    public void correctlyFindsBottomRightEdgeOfCellGrid() throws Exception {
+        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        assertThat(recognition.bottomRight(), equalTo(new WinmineScreenshotRecognition.Coords(494, 359)));
+    }
+
+    @Test
+    public void correctlyFindsDimensionOfTheGame() throws Exception {
+        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        assertThat(recognition.width(), equalTo(30));
+        assertThat(recognition.height(), equalTo(16));
+    }
 }

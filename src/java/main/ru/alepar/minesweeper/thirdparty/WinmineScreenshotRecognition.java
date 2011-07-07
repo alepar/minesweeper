@@ -21,6 +21,35 @@ public class WinmineScreenshotRecognition {
         throw new RuntimeException("cannot find topLeft grid corner");
     }
 
+    public Coords bottomRight() {
+        Coords topLeft = topLeft();
+        int rx=-1, ry=-1;
+        for(int y=topLeft.y; y<image.getHeight(); y++) {
+            if(!isDarkGrey(image.getRGB(topLeft.x-1, y))) {
+                ry = y-1;
+                break;
+            }
+        }
+        for(int x=topLeft.x; x<image.getWidth(); x++) {
+            if(!isDarkGrey(image.getRGB(x, topLeft.y-1))) {
+                rx = x-1;
+                break;
+            }
+        }
+        if(rx==-1 || ry==-1) {
+            throw new RuntimeException("cannot find bottomRight grid corner");
+        }
+        return new Coords(rx, ry);
+    }
+
+    public Integer width() {
+        return (bottomRight().x - topLeft().x + 1) / 16;
+    }
+
+    public Integer height() {
+        return (bottomRight().y - topLeft().y + 1) / 16;
+    }
+
     private boolean isStartingPointForNumberOfMinesLeft(int x, int y) {
         if(isBlack(image.getRGB(x, y))) {
             for(int i=0; i<39; i++) {
@@ -35,6 +64,10 @@ public class WinmineScreenshotRecognition {
             }
         }
         return false;
+    }
+
+    private boolean isDarkGrey(int rgb) {
+        return (rgb & 0x00ffffff) == 0x00808080;
     }
 
     private boolean isRed(int rgb) {
@@ -71,6 +104,14 @@ public class WinmineScreenshotRecognition {
             int result = x;
             result = 31 * result + y;
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return "Coords{" +
+                    x +
+                    ", " + y +
+                    '}';
         }
     }
 }
