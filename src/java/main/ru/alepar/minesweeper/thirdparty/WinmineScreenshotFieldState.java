@@ -1,17 +1,18 @@
 package ru.alepar.minesweeper.thirdparty;
 
 import ru.alepar.minesweeper.model.Cell;
+import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 
 import java.awt.image.BufferedImage;
 
-public class WinmineScreenshotRecognition {
+public class WinmineScreenshotFieldState implements FieldState {
 
     private final BufferedImage image;
     private final Coords topLeft;
     private final Coords bottomRight;
 
-    public WinmineScreenshotRecognition(BufferedImage image) {
+    public WinmineScreenshotFieldState(BufferedImage image) {
         this.image = image;
 
         this.topLeft = topLeft();
@@ -49,11 +50,11 @@ public class WinmineScreenshotRecognition {
         return new Coords(rx, ry);
     }
 
-    public Integer width() {
+    public int width() {
         return (bottomRight.x - topLeft.x + 1) / 16;
     }
 
-    public Integer height() {
+    public int height() {
         return (bottomRight.y - topLeft.y + 1) / 16;
     }
 

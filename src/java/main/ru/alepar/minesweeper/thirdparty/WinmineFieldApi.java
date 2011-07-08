@@ -1,9 +1,6 @@
 package ru.alepar.minesweeper.thirdparty;
 
-import ru.alepar.minesweeper.model.FieldApi;
-import ru.alepar.minesweeper.model.FieldState;
-import ru.alepar.minesweeper.model.Point;
-import ru.alepar.minesweeper.model.SteppedOnABomb;
+import ru.alepar.minesweeper.model.*;
 
 public class WinmineFieldApi implements FieldApi {
 
@@ -15,7 +12,11 @@ public class WinmineFieldApi implements FieldApi {
 
     @Override
     public FieldState getCurrentField() {
-        throw new RuntimeException("fix me!");
+        try {
+            return new WinmineScreenshotFieldState(app.getScreenshot());
+        } catch (NativeException e) {
+            throw new RuntimeException("failed to get current fieldstate", e);
+        }
     }
 
     @Override

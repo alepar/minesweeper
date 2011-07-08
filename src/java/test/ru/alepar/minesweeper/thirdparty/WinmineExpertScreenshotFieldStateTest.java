@@ -12,7 +12,7 @@ import java.io.InputStream;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class WinmineExpertScreenshotRecognitionTest {
+public class WinmineExpertScreenshotFieldStateTest {
 
     private BufferedImage image;
 
@@ -27,26 +27,26 @@ public class WinmineExpertScreenshotRecognitionTest {
 
     @Test
     public void correctlyFindsTopLeftEdgeOfCellGrid() throws Exception {
-        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
-        assertThat(recognition.topLeft(), equalTo(new WinmineScreenshotRecognition.Coords(15, 104)));
+        WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
+        assertThat(recognition.topLeft(), equalTo(new WinmineScreenshotFieldState.Coords(15, 104)));
     }
 
     @Test
     public void correctlyFindsBottomRightEdgeOfCellGrid() throws Exception {
-        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
-        assertThat(recognition.bottomRight(), equalTo(new WinmineScreenshotRecognition.Coords(494, 359)));
+        WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
+        assertThat(recognition.bottomRight(), equalTo(new WinmineScreenshotFieldState.Coords(494, 359)));
     }
 
     @Test
     public void correctlyFindsDimensionOfTheGame() throws Exception {
-        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
         assertThat(recognition.width(), equalTo(30));
         assertThat(recognition.height(), equalTo(16));
     }
 
     @Test
     public void correctlyRecognizesBombCell() throws Exception {
-        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
         assertThat(recognition.cellAt(new Point(11, 4)), equalTo(Cell.BOMB));
         assertThat(recognition.cellAt(new Point(11, 5)), equalTo(Cell.BOMB));
         assertThat(recognition.cellAt(new Point(13, 5)), equalTo(Cell.BOMB));
@@ -54,21 +54,21 @@ public class WinmineExpertScreenshotRecognitionTest {
 
     @Test
     public void correctlyRecognizesUncoveredThreeCell() throws Exception {
-        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
         assertThat(recognition.cellAt(new Point(12, 4)), equalTo(Cell.valueOf(3)));
         assertThat(recognition.cellAt(new Point(16, 9)), equalTo(Cell.valueOf(3)));
     }
 
     @Test
     public void correctlyRecognizesUncoveredFourCell() throws Exception {
-        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
         assertThat(recognition.cellAt(new Point(10, 4)), equalTo(Cell.valueOf(4)));
         assertThat(recognition.cellAt(new Point(12, 6)), equalTo(Cell.valueOf(4)));
     }
 
     @Test
     public void correctlyRecognizesUncoveredFiveCell() throws Exception {
-        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
         assertThat(recognition.cellAt(new Point(12, 5)), equalTo(Cell.valueOf(5)));
     }
 
