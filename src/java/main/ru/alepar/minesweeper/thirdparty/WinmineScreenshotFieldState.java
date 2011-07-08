@@ -110,7 +110,7 @@ public class WinmineScreenshotFieldState implements FieldState {
         return Cell.valueOf(0);
     }
 
-    public void hasBoomed(Point point) throws SteppedOnABomb {
+    public void blownUp(Point point) throws SteppedOnABomb {
         Coords cellTopLeft = new Coords(topLeft.x + point.x*16, topLeft.y + point.y*16);
 
         if(isDarkGrey(image.getRGB(cellTopLeft.x, cellTopLeft.y)) &&

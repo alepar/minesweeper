@@ -30,7 +30,7 @@ public class WinmineFieldApi implements FieldApi {
     public void open(Point p) throws SteppedOnABomb {
         app.leftClickAt(fieldState.clickCoordsForPoint(p));
         refreshFieldState();
-        fieldState.hasBoomed(p);
+        fieldState.blownUp(p);
     }
 
     @Override
