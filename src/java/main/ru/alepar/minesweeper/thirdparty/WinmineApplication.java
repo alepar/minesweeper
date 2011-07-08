@@ -43,7 +43,7 @@ public class WinmineApplication {
         } catch (AWTException e) {
             throw new RuntimeException("failed to create Robot - running headless?", e);
         }
-        safeSleep(100l); //allow winmine to draw itself
+        safeSleep(500l); //allow winmine to settle and draw itself
     }
 
     public void leftClickAt(Coords coords) {
