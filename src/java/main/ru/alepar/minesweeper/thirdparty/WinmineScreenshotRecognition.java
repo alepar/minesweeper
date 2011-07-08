@@ -1,5 +1,8 @@
 package ru.alepar.minesweeper.thirdparty;
 
+import ru.alepar.minesweeper.model.Cell;
+import ru.alepar.minesweeper.model.Point;
+
 import java.awt.image.BufferedImage;
 
 public class WinmineScreenshotRecognition {
@@ -50,6 +53,22 @@ public class WinmineScreenshotRecognition {
         return (bottomRight().y - topLeft().y + 1) / 16;
     }
 
+    public Cell cellAt(Point point) {
+        Coords cellTopLeft = new Coords(topLeft().x + point.x*16, topLeft().y + point.y*16);
+
+        if(isWhite(image.getRGB(cellTopLeft.x, cellTopLeft.y))) {
+            return Cell.CLOSED;
+        }
+        if(isBlue(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
+            return Cell.valueOf(1);
+        }
+        if(isGreen(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
+            return Cell.valueOf(2);
+        }
+
+        return Cell.valueOf(0);
+    }
+
     private boolean isStartingPointForNumberOfMinesLeft(int x, int y) {
         if(isBlack(image.getRGB(x, y))) {
             for(int i=0; i<39; i++) {
@@ -66,16 +85,32 @@ public class WinmineScreenshotRecognition {
         return false;
     }
 
-    private boolean isDarkGrey(int rgb) {
-        return (rgb & 0x00ffffff) == 0x00808080;
+    private static boolean isGreen(int rgb) {
+        return isHexColor(rgb, 0x00008000);
     }
 
-    private boolean isRed(int rgb) {
-        return (rgb & 0x00ffffff) == 0x00ff0000;
+    private static boolean isBlue(int rgb) {
+        return isHexColor(rgb, 0x000000ff);
+    }
+
+    private static boolean isWhite(int rgb) {
+        return isHexColor(rgb, 0x00ffffff);
+    }
+
+    private static boolean isDarkGrey(int rgb) {
+        return isHexColor(rgb, 0x00808080);
+    }
+
+    private static boolean isRed(int rgb) {
+        return isHexColor(rgb, 0x00ff0000);
     }
 
     private static boolean isBlack(int rgb) {
-        return (rgb & 0x00ffffff) == 0;
+        return isHexColor(rgb, 0);
+    }
+
+    private static boolean isHexColor(int rgb, int color) {
+        return (rgb & 0x00ffffff) == color;
     }
 
     public static final class Coords {
@@ -93,10 +128,8 @@ public class WinmineScreenshotRecognition {
 
             Coords coords = (Coords) o;
 
-            if (x != coords.x) return false;
-            if (y != coords.y) return false;
+            return x == coords.x && y == coords.y;
 
-            return true;
         }
 
         @Override

@@ -2,6 +2,8 @@ package ru.alepar.minesweeper.thirdparty;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.alepar.minesweeper.model.Cell;
+import ru.alepar.minesweeper.model.Point;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -40,5 +42,29 @@ public class WinmineBeginnerScreenshotRecognitionTest {
         WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
         assertThat(recognition.width(), equalTo(9));
         assertThat(recognition.height(), equalTo(9));
+    }
+
+    @Test
+    public void correctlyRecognizesUncoveredZeroCell() throws Exception {
+        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        assertThat(recognition.cellAt(new Point(0, 2)), equalTo(Cell.valueOf(0)));
+        assertThat(recognition.cellAt(new Point(1, 2)), equalTo(Cell.valueOf(0)));
+        assertThat(recognition.cellAt(new Point(1, 6)), equalTo(Cell.valueOf(0)));
+    }
+
+    @Test
+    public void correctlyRecognizesUncoveredOneCell() throws Exception {
+        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        assertThat(recognition.cellAt(new Point(0, 1)), equalTo(Cell.valueOf(1)));
+        assertThat(recognition.cellAt(new Point(1, 1)), equalTo(Cell.valueOf(1)));
+        assertThat(recognition.cellAt(new Point(2, 1)), equalTo(Cell.valueOf(1)));
+    }
+
+    @Test
+    public void correctlyRecognizesUncoveredTwoCell() throws Exception {
+        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        assertThat(recognition.cellAt(new Point(2, 5)), equalTo(Cell.valueOf(2)));
+        assertThat(recognition.cellAt(new Point(4, 4)), equalTo(Cell.valueOf(2)));
+        assertThat(recognition.cellAt(new Point(4, 7)), equalTo(Cell.valueOf(2)));
     }
 }
