@@ -49,4 +49,21 @@ public class WinmineFieldApiTest {
         }
     }
 
+    @Test(expected = SteppedOnABomb.class) @DesignedFor(WINDOWS)
+    public void clickingAllCellsStepsOnABomb() throws Exception {
+        WinmineApplication app = new WinmineApplication();
+        try {
+            WinmineFieldApi api = new WinmineFieldApi(app);
+
+            for(int x=0; x<api.getCurrentField().width(); x++) {
+                for(int y=0; y<api.getCurrentField().height(); y++) {
+                    api.open(new Point(x, y));
+                }
+            }
+
+        } finally {
+            app.close();
+        }
+    }
+
 }

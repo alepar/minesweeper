@@ -37,13 +37,14 @@ public class WinmineApplication {
     public WinmineApplication() {
         assertThereAreNoMinesweepersRunning();
         exec(unpackWinmine());
-        while(findWinmineWindow() == null) { sleep(); }
+        while(findWinmineWindow() == null) { safeSleep(50l); }
         windowDescriptor = findWinmineWindow();
         try {
             robot = new Robot();
         } catch (AWTException e) {
             throw new RuntimeException("failed to create Robot - running headless?", e);
         }
+        safeSleep(100l); //allow winmine to draw itself
     }
 
     public void leftClickAt(Coords coords) {
@@ -71,15 +72,7 @@ public class WinmineApplication {
 
     public void close() {
         USER32.SendMessageA(windowDescriptor, WM_CLOSE, 0, 0);
-        while(findWinmineWindow() != null) { sleep(); }
-    }
-
-    private static void sleep() {
-        try {
-            Thread.sleep(50);
-        } catch (InterruptedException e) {
-            throw new RuntimeException("todo");
-        }
+        while(findWinmineWindow() != null) { safeSleep(50l); }
     }
 
     static HWND findWinmineWindow() {

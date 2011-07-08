@@ -3,8 +3,11 @@ package ru.alepar.minesweeper.thirdparty;
 import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
+import ru.alepar.minesweeper.model.SteppedOnABomb;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 public class WinmineScreenshotFieldState implements FieldState {
 
@@ -27,7 +30,13 @@ public class WinmineScreenshotFieldState implements FieldState {
                 }
             }
         }
+        try {
+            File f = File.createTempFile("winmine", ".jpg");
+            ImageIO.write(image, "png", f);
+            System.out.println("dumped to " + f.getCanonicalPath());
+        } catch (Exception ignored) {}
         throw new RuntimeException("cannot find topLeft grid corner");
+
     }
 
     Coords bottomRight() {
@@ -86,6 +95,16 @@ public class WinmineScreenshotFieldState implements FieldState {
         return Cell.valueOf(0);
     }
 
+    public void hasBoomed(Point point) throws SteppedOnABomb {
+        Coords cellTopLeft = new Coords(topLeft.x + point.x*16, topLeft.y + point.y*16);
+
+        if(isDarkGrey(image.getRGB(cellTopLeft.x, cellTopLeft.y)) &&
+                isRed(image.getRGB(cellTopLeft.x+1, cellTopLeft.y+1)) &&
+                isBlack(image.getRGB(cellTopLeft.x+8, cellTopLeft.y+8))) {
+            throw new SteppedOnABomb(point);
+        }
+    }
+
     private boolean isStartingPointForNumberOfMinesLeft(int x, int y) {
         if(isBlack(image.getRGB(x, y))) {
             for(int i=0; i<39; i++) {
@@ -141,5 +160,4 @@ public class WinmineScreenshotFieldState implements FieldState {
     private static boolean isHexColor(int rgb, int color) {
         return (rgb & 0x00ffffff) == color;
     }
-
 }
