@@ -21,7 +21,11 @@ public class WinmineFieldApi implements FieldApi {
 
     @Override
     public void open(Point p) throws SteppedOnABomb {
-        throw new RuntimeException("fix me!");
+        try {
+            app.leftClickAt(new WinmineScreenshotFieldState(app.getScreenshot()).clickCoordsForPoint(p));
+        } catch (NativeException e) {
+            throw new RuntimeException("failed to click cell", e);
+        }
     }
 
     @Override

@@ -28,13 +28,13 @@ public class WinmineBeginnerScreenshotFieldStateTest {
     @Test
     public void correctlyFindsTopLeftEdgeOfCellGrid() throws Exception {
         WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
-        assertThat(recognition.topLeft(), equalTo(new WinmineScreenshotFieldState.Coords(15, 104)));
+        assertThat(recognition.topLeft(), equalTo(new Coords(15, 104)));
     }
 
     @Test
     public void correctlyFindsBottomRightEdgeOfCellGrid() throws Exception {
         WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
-        assertThat(recognition.bottomRight(), equalTo(new WinmineScreenshotFieldState.Coords(158, 247)));
+        assertThat(recognition.bottomRight(), equalTo(new Coords(158, 247)));
     }
 
     @Test

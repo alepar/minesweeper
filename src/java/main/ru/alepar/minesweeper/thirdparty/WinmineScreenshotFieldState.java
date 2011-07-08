@@ -102,6 +102,10 @@ public class WinmineScreenshotFieldState implements FieldState {
         return false;
     }
 
+    public Coords clickCoordsForPoint(Point p) {
+        return new Coords(p.x*16 + topLeft.x + 7, p.y*16 + topLeft.y + 7);
+    }
+
     private static boolean isDarkRed(int rgb) {
         return isHexColor(rgb, 0x00800000);
     }
@@ -138,38 +142,4 @@ public class WinmineScreenshotFieldState implements FieldState {
         return (rgb & 0x00ffffff) == color;
     }
 
-    public static final class Coords {
-        public final int x, y;
-
-        public Coords(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Coords coords = (Coords) o;
-
-            return x == coords.x && y == coords.y;
-
-        }
-
-        @Override
-        public int hashCode() {
-            int result = x;
-            result = 31 * result + y;
-            return result;
-        }
-
-        @Override
-        public String toString() {
-            return "Coords{" +
-                    x +
-                    ", " + y +
-                    '}';
-        }
-    }
 }

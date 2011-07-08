@@ -6,6 +6,7 @@ import com.sun.jna.win32.StdCallLibrary;
 import com.sun.jna.win32.W32APIOptions;
 
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
@@ -16,13 +17,14 @@ public class WinmineApplication {
     private static final String WINMINE_WINDOW_CAPTION = "Minesweeper";
 
     private HWND windowDescriptor;
+    private final Robot robot;
 
     private interface User32 extends StdCallLibrary {
-
         HWND FindWindow(String lpClassName, String lpWindowName);
         int GetWindowRect(HWND handle, int[] rect);
         long SendMessageA(HWND hWnd, int msg, int num1, int num2);
     }
+
     private int[] getRect() throws NativeException {
         int[] rect = {0, 0, 0, 0};
         int result = USER32.GetWindowRect(windowDescriptor, rect);
@@ -37,6 +39,23 @@ public class WinmineApplication {
         exec(unpackWinmine());
         while(findWinmineWindow() == null) { sleep(); }
         windowDescriptor = findWinmineWindow();
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            throw new RuntimeException("failed to create Robot - running headless?", e);
+        }
+    }
+
+    public void leftClickAt(Coords coords) {
+        try {
+            int[] rect = getRect();
+            robot.mouseMove(coords.x + rect[0], coords.y + rect[1]);
+            robot.mousePress(InputEvent.BUTTON1_MASK);
+            safeSleep(5l);
+            robot.mouseRelease(InputEvent.BUTTON1_MASK);
+        } catch (NativeException e) {
+            throw new RuntimeException("faled to left click", e);
+        }
     }
 
     private void assertThereAreNoMinesweepersRunning() {
@@ -47,12 +66,7 @@ public class WinmineApplication {
 
     public BufferedImage getScreenshot() throws NativeException {
         int[] rect = getRect();
-        try {
-            Robot robot = new Robot();
-            return robot.createScreenCapture(new Rectangle(rect[0], rect[1], rect[2] - rect[0], rect[3] - rect[1]));
-        } catch (AWTException e) {
-            throw new RuntimeException("Robot failed to take screenshot", e);
-        }
+        return robot.createScreenCapture(new Rectangle(rect[0], rect[1], rect[2] - rect[0], rect[3] - rect[1]));
     }
 
     public void close() {
@@ -115,6 +129,14 @@ public class WinmineApplication {
             }
         } finally {
             is.close();
+        }
+    }
+
+    private void safeSleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();  //propagate interrupt further
         }
     }
 
