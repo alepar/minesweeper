@@ -61,6 +61,9 @@ public class WinmineScreenshotRecognition {
         Coords cellTopLeft = new Coords(topLeft.x + point.x*16, topLeft.y + point.y*16);
 
         if(isWhite(image.getRGB(cellTopLeft.x, cellTopLeft.y))) {
+            if(isRed(image.getRGB(cellTopLeft.x+6, cellTopLeft.y+6)) && isBlack(image.getRGB(cellTopLeft.x+8, cellTopLeft.y+11))) {
+                return Cell.BOMB;
+            }
             return Cell.CLOSED;
         }
         if(isBlue(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {

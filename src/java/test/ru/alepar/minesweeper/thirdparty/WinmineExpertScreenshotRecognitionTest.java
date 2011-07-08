@@ -45,6 +45,14 @@ public class WinmineExpertScreenshotRecognitionTest {
     }
 
     @Test
+    public void correctlyRecognizesBombCell() throws Exception {
+        WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
+        assertThat(recognition.cellAt(new Point(11, 4)), equalTo(Cell.BOMB));
+        assertThat(recognition.cellAt(new Point(11, 5)), equalTo(Cell.BOMB));
+        assertThat(recognition.cellAt(new Point(13, 5)), equalTo(Cell.BOMB));
+    }
+
+    @Test
     public void correctlyRecognizesUncoveredThreeCell() throws Exception {
         WinmineScreenshotRecognition recognition = new WinmineScreenshotRecognition(image);
         assertThat(recognition.cellAt(new Point(12, 4)), equalTo(Cell.valueOf(3)));
