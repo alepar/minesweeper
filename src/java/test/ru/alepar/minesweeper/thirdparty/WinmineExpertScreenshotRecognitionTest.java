@@ -10,13 +10,13 @@ import java.io.InputStream;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class WinmineScreenshotRecognitionTest {
+public class WinmineExpertScreenshotRecognitionTest {
 
     private BufferedImage image;
 
     @Before
     public void setUp() throws Exception {
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("ru/alepar/minesweeper/thirdparty/winmine_screenshot.png");
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream("ru/alepar/minesweeper/thirdparty/winmine_expert_screenshot.png");
         if (stream == null) {
             throw new RuntimeException("could not find test screenshot");
         }
