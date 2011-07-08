@@ -55,7 +55,7 @@ public class WinmineApplication {
             safeSleep(5l);
             robot.mouseRelease(InputEvent.BUTTON1_MASK);
         } catch (NativeException e) {
-            throw new RuntimeException("faled to left click", e);
+            throw new RuntimeException("failed to left click", e);
         }
     }
 
