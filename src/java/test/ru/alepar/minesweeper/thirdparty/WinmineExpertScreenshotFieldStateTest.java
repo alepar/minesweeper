@@ -78,6 +78,12 @@ public class WinmineExpertScreenshotFieldStateTest {
         assertThat(recognition.cellAt(new Point(10, 5)), equalTo(Cell.valueOf(6)));
     }
 
+    @Test
+    public void correctlyRecognizesUncoveredSevenCell() throws Exception {
+        WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);
+        assertThat(recognition.cellAt(new Point(8, 7)), equalTo(Cell.valueOf(7)));
+    }
+
     @Test(expected = RuntimeException.class)
     public void correctlyReportsUnrecognizedCell() throws Exception {
         WinmineScreenshotFieldState recognition = new WinmineScreenshotFieldState(image);

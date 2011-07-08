@@ -95,6 +95,9 @@ public class WinmineScreenshotFieldState implements FieldState {
         if(isCyan(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
             return Cell.valueOf(6);
         }
+        if(isBlack(image.getRGB(cellTopLeft.x + 3, cellTopLeft.y + 3))) {
+            return Cell.valueOf(7);
+        }
 
         for(int x=1; x<16; x++) {
             for(int y=1; y<16; y++) {
