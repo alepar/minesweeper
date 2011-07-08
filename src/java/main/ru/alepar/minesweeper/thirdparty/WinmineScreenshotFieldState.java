@@ -92,6 +92,9 @@ public class WinmineScreenshotFieldState implements FieldState {
         if(isDarkRed(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
             return Cell.valueOf(5);
         }
+        if(isCyan(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
+            return Cell.valueOf(6);
+        }
 
         for(int x=1; x<16; x++) {
             for(int y=1; y<16; y++) {
@@ -138,6 +141,10 @@ public class WinmineScreenshotFieldState implements FieldState {
 
     public Coords clickCoordsForPoint(Point p) {
         return new Coords(p.x*16 + topLeft.x + 7, p.y*16 + topLeft.y + 7);
+    }
+
+    private boolean isCyan(int rgb) {
+        return isHexColor(rgb, 0x00008080);
     }
 
     private static boolean isLightGrey(int rgb) {
