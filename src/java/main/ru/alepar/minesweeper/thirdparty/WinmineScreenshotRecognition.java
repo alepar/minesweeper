@@ -8,12 +8,17 @@ import java.awt.image.BufferedImage;
 public class WinmineScreenshotRecognition {
 
     private final BufferedImage image;
+    private final Coords topLeft;
+    private final Coords bottomRight;
 
     public WinmineScreenshotRecognition(BufferedImage image) {
         this.image = image;
+
+        this.topLeft = topLeft();
+        this.bottomRight = bottomRight();
     }
 
-    public Coords topLeft() {
+    Coords topLeft() {
         for(int x=0; x<image.getWidth(); x++) {
             for(int y=0; y<image.getHeight(); y++) {
                 if(isStartingPointForNumberOfMinesLeft(x, y)) {
@@ -24,16 +29,15 @@ public class WinmineScreenshotRecognition {
         throw new RuntimeException("cannot find topLeft grid corner");
     }
 
-    public Coords bottomRight() {
-        Coords topLeft = topLeft();
+    Coords bottomRight() {
         int rx=-1, ry=-1;
-        for(int y=topLeft.y; y<image.getHeight(); y++) {
+        for(int y= topLeft.y; y<image.getHeight(); y++) {
             if(!isDarkGrey(image.getRGB(topLeft.x-1, y))) {
                 ry = y-1;
                 break;
             }
         }
-        for(int x=topLeft.x; x<image.getWidth(); x++) {
+        for(int x= topLeft.x; x<image.getWidth(); x++) {
             if(!isDarkGrey(image.getRGB(x, topLeft.y-1))) {
                 rx = x-1;
                 break;
@@ -46,15 +50,15 @@ public class WinmineScreenshotRecognition {
     }
 
     public Integer width() {
-        return (bottomRight().x - topLeft().x + 1) / 16;
+        return (bottomRight.x - topLeft.x + 1) / 16;
     }
 
     public Integer height() {
-        return (bottomRight().y - topLeft().y + 1) / 16;
+        return (bottomRight.y - topLeft.y + 1) / 16;
     }
 
     public Cell cellAt(Point point) {
-        Coords cellTopLeft = new Coords(topLeft().x + point.x*16, topLeft().y + point.y*16);
+        Coords cellTopLeft = new Coords(topLeft.x + point.x*16, topLeft.y + point.y*16);
 
         if(isWhite(image.getRGB(cellTopLeft.x, cellTopLeft.y))) {
             return Cell.CLOSED;
@@ -64,6 +68,15 @@ public class WinmineScreenshotRecognition {
         }
         if(isGreen(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
             return Cell.valueOf(2);
+        }
+        if(isRed(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
+            return Cell.valueOf(3);
+        }
+        if(isDarkBlue(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
+            return Cell.valueOf(4);
+        }
+        if(isDarkRed(image.getRGB(cellTopLeft.x + 8, cellTopLeft.y + 8))) {
+            return Cell.valueOf(5);
         }
 
         return Cell.valueOf(0);
@@ -83,6 +96,14 @@ public class WinmineScreenshotRecognition {
             }
         }
         return false;
+    }
+
+    private static boolean isDarkRed(int rgb) {
+        return isHexColor(rgb, 0x00800000);
+    }
+
+    private static boolean isDarkBlue(int rgb) {
+        return isHexColor(rgb, 0x00000080);
     }
 
     private static boolean isGreen(int rgb) {
