@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static ru.alepar.minesweeper.testsupport.OS.WINDOWS;
+import static ru.alepar.minesweeper.thirdparty.WinmineApplication.findWinmineWindow;
 
 
 @RunWith(OsSpecificRespectingClassRunner.class)
@@ -21,11 +22,11 @@ public class WinmineApplicationTest {
     public void startsAndClosesApplicationWithoutExceptions() throws Exception {
         WinmineApplication app = new WinmineApplication();
         try {
-            assertThat(WinmineApplication.findWinmineWindow(), notNullValue());
+            assertThat(findWinmineWindow(), notNullValue());
         } finally {
             app.close();
         }
-        assertThat(WinmineApplication.findWinmineWindow(), nullValue());
+        assertThat(findWinmineWindow(), nullValue());
     }
 
     @Test @DesignedFor(WINDOWS)
