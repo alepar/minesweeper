@@ -37,13 +37,25 @@ public class WinmineFieldApiTest {
     }
 
     @Test @DesignedFor(WINDOWS)
-    public void clickingUncoversCellOrStepsOnABomb() throws Exception {
+    public void leftClickingUncoversCellOrStepsOnABomb() throws Exception {
         WinmineApplication app = new WinmineApplication();
         try {
             WinmineFieldApi api = new WinmineFieldApi(app);
             api.open(new Point(0, 0));
             assertThat(api.getCurrentField().cellAt(new Point(0, 0)), not(equalTo(Cell.CLOSED)));
         } catch(SteppedOnABomb ignored) {
+        } finally {
+            app.close();
+        }
+    }
+
+    @Test @DesignedFor(WINDOWS)
+    public void rightClickingMarksAsBomb() throws Exception {
+        WinmineApplication app = new WinmineApplication();
+        try {
+            WinmineFieldApi api = new WinmineFieldApi(app);
+            api.markBomb(new Point(0, 0));
+            assertThat(api.getCurrentField().cellAt(new Point(0, 0)), equalTo(Cell.BOMB));
         } finally {
             app.close();
         }

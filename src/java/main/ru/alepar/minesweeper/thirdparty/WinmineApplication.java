@@ -24,7 +24,6 @@ public class WinmineApplication {
         int GetWindowRect(HWND handle, int[] rect);
         long SendMessageA(HWND hWnd, int msg, int num1, int num2);
     }
-
     private int[] getRect() throws NativeException {
         int[] rect = {0, 0, 0, 0};
         int result = USER32.GetWindowRect(windowDescriptor, rect);
@@ -48,12 +47,20 @@ public class WinmineApplication {
     }
 
     public void leftClickAt(Coords coords) {
+        clickMouseWith(coords, InputEvent.BUTTON1_MASK);
+    }
+
+    public void rightClickAt(Coords coords) {
+        clickMouseWith(coords, InputEvent.BUTTON3_MASK);
+    }
+
+    private void clickMouseWith(Coords coords, int buttonMask) {
         try {
             int[] rect = getRect();
             robot.mouseMove(coords.x + rect[0], coords.y + rect[1]);
-            robot.mousePress(InputEvent.BUTTON1_MASK);
+            robot.mousePress(buttonMask);
             safeSleep(5l);
-            robot.mouseRelease(InputEvent.BUTTON1_MASK);
+            robot.mouseRelease(buttonMask);
         } catch (NativeException e) {
             throw new RuntimeException("failed to left click", e);
         }

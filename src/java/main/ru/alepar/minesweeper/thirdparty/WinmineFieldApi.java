@@ -35,9 +35,7 @@ public class WinmineFieldApi implements FieldApi {
 
     @Override
     public void markBomb(Point p) {
-/*
         app.rightClickAt(fieldState.clickCoordsForPoint(p));
         refreshFieldState();
-*/
     }
 }
