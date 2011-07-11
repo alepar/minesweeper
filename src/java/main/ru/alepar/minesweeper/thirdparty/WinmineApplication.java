@@ -59,7 +59,6 @@ public class WinmineApplication {
             int[] rect = getRect();
             robot.mouseMove(coords.x + rect[0], coords.y + rect[1]);
             robot.mousePress(buttonMask);
-            safeSleep(5l);
             robot.mouseRelease(buttonMask);
         } catch (NativeException e) {
             throw new RuntimeException("failed to left click", e);
