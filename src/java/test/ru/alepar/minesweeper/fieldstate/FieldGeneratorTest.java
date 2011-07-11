@@ -62,9 +62,7 @@ public class FieldGeneratorTest {
                             numOfNeighbourBombs++;
                         }
                     }
-                    if(curCell.value != numOfNeighbourBombs) {
-                        throw new RuntimeException("number of bombs doesnt match for " + curPoint);
-                    }
+                    assertThat("number of bombs doesnt match for " + curPoint, curCell.value, equalTo(numOfNeighbourBombs));
                 }
             }
         }
