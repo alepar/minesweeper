@@ -5,6 +5,7 @@ import com.sun.jna.platform.win32.WinDef.HWND;
 public class WinmineApplication {
 
     private static final String WINMINE_WINDOW_CAPTION = "Minesweeper";
+    private static final String WINMINE_RESOURCE = "winmine.exe";
 
     private final User32 user32;
     private final Window wnd;
@@ -13,7 +14,7 @@ public class WinmineApplication {
         this.user32 = user32;
 
         assertThereAreNoMinesweepersRunning();
-        launcher.launch("winmine.exe");
+        launcher.launch(WINMINE_RESOURCE);
 
         while(findWinmineWindow() == null) { safeSleep(50l); }
         safeSleep(500l); //allow winmine to settle and draw itself
