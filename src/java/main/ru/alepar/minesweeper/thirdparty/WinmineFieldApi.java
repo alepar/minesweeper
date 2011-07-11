@@ -4,18 +4,18 @@ import ru.alepar.minesweeper.model.*;
 
 public class WinmineFieldApi implements FieldApi {
 
-    private final WinmineApplication app;
+    private final Window window;
 
     private WinmineScreenshotFieldState fieldState;
 
-    public WinmineFieldApi(WinmineApplication app) {
-        this.app = app;
+    public WinmineFieldApi(Window window) {
+        this.window = window;
         refreshFieldState();
     }
 
     private void refreshFieldState() {
         try {
-            fieldState = new WinmineScreenshotFieldState(app.getScreenshot());
+            fieldState = new WinmineScreenshotFieldState(window.getScreenshot());
         } catch (NativeException e) {
             throw new RuntimeException("failed to refresh fieldstate", e);
         }
@@ -28,14 +28,14 @@ public class WinmineFieldApi implements FieldApi {
 
     @Override
     public void open(Point p) throws SteppedOnABomb {
-        app.leftClickAt(fieldState.clickCoordsForPoint(p));
+        window.leftClickAt(fieldState.clickCoordsForPoint(p));
         refreshFieldState();
         fieldState.blownUp(p);
     }
 
     @Override
     public void markBomb(Point p) {
-        app.rightClickAt(fieldState.clickCoordsForPoint(p));
+        window.rightClickAt(fieldState.clickCoordsForPoint(p));
         refreshFieldState();
     }
 }

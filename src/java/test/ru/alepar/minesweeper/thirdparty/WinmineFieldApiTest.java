@@ -22,9 +22,9 @@ public class WinmineFieldApiTest {
 
     @Test @DesignedFor(WINDOWS)
     public void initiallyAllPointsAreClosed() throws Exception {
-        WinmineApplication app = new WinmineApplication();
+        WinmineApplication app = new WinmineApplication(User32.USER32, new ResourceLauncher());
         try {
-            WinmineFieldApi api = new WinmineFieldApi(app);
+            WinmineFieldApi api = new WinmineFieldApi(app.getWindow());
             FieldState currentField = api.getCurrentField();
             for(int x=0; x < currentField.width(); x++) {
                 for(int y=0; y < currentField.height(); y++) {
@@ -38,9 +38,9 @@ public class WinmineFieldApiTest {
 
     @Test @DesignedFor(WINDOWS)
     public void leftClickingUncoversCellOrStepsOnABomb() throws Exception {
-        WinmineApplication app = new WinmineApplication();
+        WinmineApplication app = new WinmineApplication(User32.USER32, new ResourceLauncher());
         try {
-            WinmineFieldApi api = new WinmineFieldApi(app);
+            WinmineFieldApi api = new WinmineFieldApi(app.getWindow());
             api.open(new Point(0, 0));
             assertThat(api.getCurrentField().cellAt(new Point(0, 0)), not(equalTo(Cell.CLOSED)));
         } catch(SteppedOnABomb ignored) {
@@ -51,9 +51,9 @@ public class WinmineFieldApiTest {
 
     @Test @DesignedFor(WINDOWS)
     public void rightClickingMarksAsBomb() throws Exception {
-        WinmineApplication app = new WinmineApplication();
+        WinmineApplication app = new WinmineApplication(User32.USER32, new ResourceLauncher());
         try {
-            WinmineFieldApi api = new WinmineFieldApi(app);
+            WinmineFieldApi api = new WinmineFieldApi(app.getWindow());
             api.markBomb(new Point(0, 0));
             assertThat(api.getCurrentField().cellAt(new Point(0, 0)), equalTo(Cell.BOMB));
         } finally {
@@ -63,9 +63,9 @@ public class WinmineFieldApiTest {
 
     @Test(expected = SteppedOnABomb.class) @DesignedFor(WINDOWS)
     public void clickingAllCellsStepsOnABomb() throws Exception {
-        WinmineApplication app = new WinmineApplication();
+        WinmineApplication app = new WinmineApplication(User32.USER32, new ResourceLauncher());
         try {
-            WinmineFieldApi api = new WinmineFieldApi(app);
+            WinmineFieldApi api = new WinmineFieldApi(app.getWindow());
 
             for(int x=0; x<api.getCurrentField().width(); x++) {
                 for(int y=0; y<api.getCurrentField().height(); y++) {
