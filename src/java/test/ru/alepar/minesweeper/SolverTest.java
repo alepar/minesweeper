@@ -4,10 +4,10 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import ru.alepar.minesweeper.core.SimpleFieldApi;
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
-import ru.alepar.minesweeper.fieldstate.FieldGenerator;
 import ru.alepar.minesweeper.fieldstate.FieldPreopener;
 import ru.alepar.minesweeper.model.FieldApi;
 import ru.alepar.minesweeper.model.FieldState;
+import ru.alepar.minesweeper.model.SteppedOnABomb;
 import ru.alepar.minesweeper.testsupport.FieldStateFixtureBuilder;
 
 import static org.junit.Assert.assertThat;
@@ -96,5 +96,27 @@ public class SolverTest {
         FieldState state = solver.solve();
 
         assertThat(state, Matchers.<FieldState>equalTo(fullField ));
+    }
+
+    @Test
+    public void whenStruckByAStateWhereMoreThanOneSolutionIsPossibleMakesAGuessAndEitherFailsOrIsLucky() throws Exception {
+        ArrayFieldState fullField = new FieldStateFixtureBuilder()
+                .row("x1")
+                .row("11")
+            .build();
+
+        ArrayFieldState startField = new FieldStateFixtureBuilder()
+                .row(".1")
+                .row(".1")
+            .build();
+
+        FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
+
+        Solver solver = new Solver(fieldApi);
+        try {
+            assertThat(solver.solve(), Matchers.<FieldState>equalTo(fullField));
+        } catch (SteppedOnABomb ignored) {
+            //blowing-up is a risk we have to take when guessing
+        }
     }
 }

@@ -20,18 +20,14 @@ public class Solver {
         pointFactory = new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height());
     }
 
-    public FieldState solve() {
-        try {
-            FieldState last;
-            FieldState current = fieldApi.getCurrentField();
-            do {
-                last = current;
-                current = executor.execute(createMinMaxAnalyzer().solve());
-            } while (!last.equals(current));
-            return current;
-        } catch (SteppedOnABomb e) {
-            throw new RuntimeException("analyzer has blown up", e);
-        }
+    public FieldState solve() throws SteppedOnABomb {
+        FieldState last;
+        FieldState current = fieldApi.getCurrentField();
+        do {
+            last = current;
+            current = executor.execute(createMinMaxAnalyzer().solve());
+        } while (!last.equals(current));
+        return current;
     }
 
     private MinMaxConfidentAnalyzer createMinMaxAnalyzer() {
