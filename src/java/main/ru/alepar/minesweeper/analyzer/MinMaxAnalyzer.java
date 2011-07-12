@@ -35,31 +35,38 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
     }
 
     private Set<Limit> shuffleLimits(Set<Limit> limits) {
-        Set<Limit> shuffledLimits = limits;
+        Set<Limit> last = limits;
+        Set<Limit> prev = new HashSet<Limit>();
 
-        do {
-            limits = shuffledLimits;
-            shuffledLimits = shuffleLimitsOneIteration(shuffledLimits);
-        } while (shuffledLimits.size() > limits.size());
+        while(true) {
+            Set<Limit> current = shuffleLimitsOneIteration(prev, last);
+            prev.addAll(last);
+            last = new HashSet<Limit>(current);
 
-        return shuffledLimits;
-    }
-
-    private Set<Limit> shuffleLimitsOneIteration(Set<Limit> limits) {
-        limits = new HashSet<Limit>(limits);
-        Set<Limit> shuffledLimits = new HashSet<Limit>();
-
-        Iterator<Limit> it = limits.iterator();
-        while (it.hasNext()) {
-            Limit first = it.next();
-            it.remove();
-            shuffledLimits.add(first);
-
-            for (Limit second : limits) {
-                shuffledLimits.addAll(limitShuffler.shuffleLimitsPair(first, second));
+            current.removeAll(prev);
+            if(current.isEmpty()) {
+                break;
             }
         }
-        return shuffledLimits;
+
+        return prev;
+    }
+
+    private Set<Limit> shuffleLimitsOneIteration(Set<Limit> prev, Set<Limit> last) {
+        Set<Limit> result = new HashSet<Limit>();
+
+        for (Limit first : last) {
+            for (Limit second : prev) {
+                result.addAll(limitShuffler.shuffleLimitsPair(first, second));
+            }
+            for (Limit second : last) {
+                if (first != second) {
+                    result.addAll(limitShuffler.shuffleLimitsPair(first, second));
+                }
+            }
+        }
+
+        return result;
     }
 
     private Result openDeterminedLimits(Set<Limit> limits) {
