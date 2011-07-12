@@ -1,6 +1,8 @@
 package ru.alepar.minesweeper.thirdparty;
 
 import com.sun.jna.platform.win32.WinDef.HWND;
+import ru.alepar.minesweeper.Solver;
+import ru.alepar.minesweeper.model.SteppedOnABomb;
 
 public class WinmineApplication {
 
@@ -45,5 +47,19 @@ public class WinmineApplication {
 
     public void close() {
         wnd.close();
+    }
+
+    public static void main(String[] args) {
+        while (true) {
+            WinmineApplication app = new WinmineApplication(User32.USER32, new ResourceLauncher());
+            Window window = app.getWindow();
+            Solver solver = new Solver(new WinmineFieldApi(window));
+            try {
+                solver.solve();
+                return;
+            } catch (SteppedOnABomb steppedOnABomb) {
+                window.close();
+            }
+        }
     }
 }
