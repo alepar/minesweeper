@@ -1,12 +1,10 @@
 package ru.alepar.minesweeper.analyzer;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.core.SimpleFieldApi;
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
 import ru.alepar.minesweeper.model.FieldApi;
-import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 import ru.alepar.minesweeper.testsupport.FieldStateFixtureBuilder;
 
@@ -17,7 +15,7 @@ import java.util.Set;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-public class FieldAnalyzerTest {
+public class ConfidentAnalyzerTest {
 
     @Test
     public void solvesVerySimpleOneLinerCase() throws Exception {
@@ -32,11 +30,11 @@ public class FieldAnalyzerTest {
         Set<Point> toMark = new HashSet<Point>() {{
             add(new Point(1, 0));
         }};
-        FieldAnalyzer.Result expected = new FieldAnalyzer.Result(toMark, Collections.<Point>emptySet());
+        ConfidentAnalyzer.Result expected = new ConfidentAnalyzer.Result(toMark, Collections.<Point>emptySet());
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
-        FieldAnalyzer.Result result = analyzer.solve();
+        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ConfidentAnalyzer.Result result = analyzer.solve();
 
         assertThat(result, equalTo(expected));
     }
@@ -58,11 +56,11 @@ public class FieldAnalyzerTest {
             add(new Point(2, 0));
             add(new Point(3, 0));
         }};
-        FieldAnalyzer.Result expected = new FieldAnalyzer.Result(toMark, Collections.<Point>emptySet());
+        ConfidentAnalyzer.Result expected = new ConfidentAnalyzer.Result(toMark, Collections.<Point>emptySet());
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
-        FieldAnalyzer.Result result = analyzer.solve();
+        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ConfidentAnalyzer.Result result = analyzer.solve();
 
         assertThat(result, equalTo(expected));
     }
@@ -85,11 +83,11 @@ public class FieldAnalyzerTest {
         Set<Point> toOpen = new HashSet<Point>() {{
             add(new Point(1, 0));
         }};
-        FieldAnalyzer.Result expected = new FieldAnalyzer.Result(toMark, toOpen);
+        ConfidentAnalyzer.Result expected = new ConfidentAnalyzer.Result(toMark, toOpen);
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
-        FieldAnalyzer.Result result = analyzer.solve();
+        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ConfidentAnalyzer.Result result = analyzer.solve();
 
         assertThat(result, equalTo(expected));
     }
@@ -115,11 +113,11 @@ public class FieldAnalyzerTest {
             add(new Point(2, 0));
             add(new Point(4, 0));
         }};
-        FieldAnalyzer.Result expected = new FieldAnalyzer.Result(toMark, toOpen);
+        ConfidentAnalyzer.Result expected = new ConfidentAnalyzer.Result(toMark, toOpen);
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        FieldAnalyzer analyzer = new MinMaxConfidentAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
-        FieldAnalyzer.Result result = analyzer.solve();
+        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ConfidentAnalyzer.Result result = analyzer.solve();
 
         assertThat(result, equalTo(expected));
     }

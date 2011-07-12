@@ -13,12 +13,12 @@ import java.util.Set;
 
 import static ru.alepar.minesweeper.core.PointFilters.*;
 
-public class MinMaxConfidentAnalyzer implements FieldAnalyzer {
+public class MinMaxAnalyzer implements ConfidentAnalyzer {
 
     private final PointFactory pointFactory;
     private final FieldState currentField;
 
-    public MinMaxConfidentAnalyzer(PointFactory pointFactory, FieldState currentField) {
+    public MinMaxAnalyzer(PointFactory pointFactory, FieldState currentField) {
         this.pointFactory = pointFactory;
         this.currentField = currentField;
     }

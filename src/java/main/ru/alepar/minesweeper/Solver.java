@@ -1,6 +1,6 @@
 package ru.alepar.minesweeper;
 
-import ru.alepar.minesweeper.analyzer.MinMaxConfidentAnalyzer;
+import ru.alepar.minesweeper.analyzer.MinMaxAnalyzer;
 import ru.alepar.minesweeper.analyzer.ResultExecutor;
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.model.FieldApi;
@@ -30,8 +30,8 @@ public class Solver {
         return current;
     }
 
-    private MinMaxConfidentAnalyzer createMinMaxAnalyzer() {
-        return new MinMaxConfidentAnalyzer(pointFactory, fieldApi.getCurrentField());
+    private MinMaxAnalyzer createMinMaxAnalyzer() {
+        return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField());
     }
 
 }

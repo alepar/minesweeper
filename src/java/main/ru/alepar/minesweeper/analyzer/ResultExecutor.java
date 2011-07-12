@@ -13,7 +13,7 @@ public class ResultExecutor {
         this.fieldApi = fieldApi;
     }
 
-    public FieldState execute(FieldAnalyzer.Result result) throws SteppedOnABomb {
+    public FieldState execute(ConfidentAnalyzer.Result result) throws SteppedOnABomb {
         for (Point p : result.toOpen) {
             fieldApi.open(p);
         }

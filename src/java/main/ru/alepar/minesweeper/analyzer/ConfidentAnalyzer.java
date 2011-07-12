@@ -4,7 +4,7 @@ import ru.alepar.minesweeper.model.Point;
 
 import java.util.Set;
 
-public interface FieldAnalyzer {
+public interface ConfidentAnalyzer {
     Result solve();
 
     public class Result {
