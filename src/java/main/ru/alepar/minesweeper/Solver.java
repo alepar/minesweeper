@@ -1,11 +1,8 @@
 package ru.alepar.minesweeper;
 
-import ru.alepar.minesweeper.analyzer.MinMaxAnalyzer;
-import ru.alepar.minesweeper.analyzer.ResultExecutor;
+import ru.alepar.minesweeper.analyzer.*;
 import ru.alepar.minesweeper.core.PointFactory;
-import ru.alepar.minesweeper.model.FieldApi;
-import ru.alepar.minesweeper.model.FieldState;
-import ru.alepar.minesweeper.model.SteppedOnABomb;
+import ru.alepar.minesweeper.model.*;
 
 public class Solver {
 
@@ -23,15 +20,37 @@ public class Solver {
     public FieldState solve() throws SteppedOnABomb {
         FieldState last;
         FieldState current = fieldApi.getCurrentField();
-        do {
-            last = current;
-            current = executor.execute(createMinMaxAnalyzer().solve());
-        } while (!last.equals(current));
-        return current;
+        while (true) {
+            do {
+                last = current;
+                current = executor.execute(createConfidentAnalyzer().solve());
+            } while (!last.equals(current));
+
+            if(!hasClosedCells(current)) {
+                return current;
+            }
+
+            fieldApi.open(createGuessingAnalyzer().guessWhatToOpen());
+        }
     }
 
-    private MinMaxAnalyzer createMinMaxAnalyzer() {
+    private static boolean hasClosedCells(FieldState field) {
+        for (int x=0; x<field.width(); x++) {
+            for (int y=0; y<field.height(); y++) {
+                if(field.cellAt(new Point(x, y)) == Cell.CLOSED) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private ConfidentAnalyzer createConfidentAnalyzer() {
         return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField());
+    }
+
+    private GuessingAnalyzer createGuessingAnalyzer() {
+        return new LowestProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft());
     }
 
 }

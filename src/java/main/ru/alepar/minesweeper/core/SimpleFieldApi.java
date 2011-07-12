@@ -36,4 +36,17 @@ public class SimpleFieldApi implements FieldApi {
         current = current.mutate(p, Cell.BOMB);
     }
 
+    @Override
+    public int bombsLeft() {
+        int result = 0;
+        for (int x=0; x<full.width(); x++) {
+            for (int y=0; y<full.height(); y++) {
+                Point p = new Point(x, y);
+                if(current.cellAt(p) == Cell.CLOSED && full.cellAt(p) == Cell.BOMB) {
+                    result++;
+                }
+            }
+        }
+        return result;
+    }
 }

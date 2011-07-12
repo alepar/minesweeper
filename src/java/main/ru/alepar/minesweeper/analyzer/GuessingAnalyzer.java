@@ -1,4 +1,9 @@
 package ru.alepar.minesweeper.analyzer;
 
-public class GuessingAnalyzer {
+import ru.alepar.minesweeper.model.Point;
+
+public interface GuessingAnalyzer {
+
+    Point guessWhatToOpen();
+
 }

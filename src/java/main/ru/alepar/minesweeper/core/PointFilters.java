@@ -29,6 +29,15 @@ public class PointFilters {
         };
     }
 
+    public static Filter openedCellsOn(final FieldState field) {
+        return new Filter() {
+            @Override
+            public boolean accept(Point p) {
+                return field.cellAt(p).isOpened();
+            }
+        };
+    }
+
     public static Filter bombCellsOn(final FieldState field) {
         return new Filter() {
             @Override

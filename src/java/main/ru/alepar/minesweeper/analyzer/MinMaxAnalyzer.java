@@ -25,9 +25,11 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
 
     @Override
     public Result solve() {
-        Set<Limit> limits = createLimits();
-        limits = shuffleLimits(limits);
-        return openDeterminedLimits(limits);
+        return openDeterminedLimits(shuffledLimits());
+    }
+
+    Set<Limit> shuffledLimits() {
+        return shuffleLimits(createLimits());
     }
 
     private static Set<Limit> shuffleLimits(Set<Limit> limits) {
@@ -142,5 +144,4 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
         }
         return result;
     }
-
 }

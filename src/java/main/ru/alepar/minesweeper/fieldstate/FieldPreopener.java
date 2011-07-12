@@ -1,7 +1,6 @@
 package ru.alepar.minesweeper.fieldstate;
 
 import ru.alepar.minesweeper.core.PointFactory;
-import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
 import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.Point;
 

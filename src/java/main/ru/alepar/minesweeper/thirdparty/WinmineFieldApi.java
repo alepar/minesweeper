@@ -38,4 +38,18 @@ public class WinmineFieldApi implements FieldApi {
         window.rightClickAt(fieldState.clickCoordsForPoint(p));
         refreshFieldState();
     }
+
+    @Override
+    public int bombsLeft() {
+        int result = 99;
+        for (int x=0; x<fieldState.width(); x++) {
+            for (int y=0; y<fieldState.height(); y++) {
+                if(fieldState.cellAt(new Point(x, y)) == Cell.BOMB) {
+                    result--;
+                }
+            }
+        }
+        return result;
+    }
+
 }
