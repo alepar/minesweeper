@@ -87,7 +87,10 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
                 Set<Point> closedNeighbours = filter(pointFactory.adjacentTo(p), closedCellsOn(currentField));
                 Set<Point> discoveredBombNeighbours = filter(pointFactory.adjacentTo(p), bombCellsOn(currentField));
                 int bombsLeftUndiscovered = cell.value - discoveredBombNeighbours.size();
-                result.add(new Limit(new Region(closedNeighbours).subtract(new Region(discoveredBombNeighbours)), bombsLeftUndiscovered, bombsLeftUndiscovered));
+                Region region = new Region(closedNeighbours).subtract(new Region(discoveredBombNeighbours));
+                if (!region.points().isEmpty()) {
+                    result.add(new Limit(region, bombsLeftUndiscovered, bombsLeftUndiscovered));
+                }
             }
         }
         return result;
