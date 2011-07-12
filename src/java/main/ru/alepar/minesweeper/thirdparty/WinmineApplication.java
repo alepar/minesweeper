@@ -50,12 +50,15 @@ public class WinmineApplication {
     }
 
     public static void main(String[] args) {
+        int numberOfTries = 0;
         while (true) {
+            numberOfTries++;
             WinmineApplication app = new WinmineApplication(User32.USER32, new ResourceLauncher());
             Window window = app.getWindow();
             Solver solver = new Solver(new WinmineFieldApi(window));
             try {
                 solver.solve();
+                System.out.println("numOfTries = " + numberOfTries);
                 return;
             } catch (SteppedOnABomb steppedOnABomb) {
                 window.close();
