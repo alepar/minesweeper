@@ -9,12 +9,14 @@ public class Solver {
     private final FieldApi fieldApi;
     private final ResultExecutor executor;
     private final PointFactory pointFactory;
+    private final LimitShuffler limitShuffler;
 
-    public Solver(FieldApi fieldApi) {
+    public Solver(FieldApi fieldApi, LimitShuffler limitShuffler) {
         this.fieldApi = fieldApi;
+        this.limitShuffler = limitShuffler;
 
-        executor = new ResultExecutor(fieldApi);
-        pointFactory = new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height());
+        this.executor = new ResultExecutor(fieldApi);
+        this.pointFactory = new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height());
     }
 
     public FieldState solve() throws SteppedOnABomb {
@@ -46,7 +48,7 @@ public class Solver {
     }
 
     private ConfidentAnalyzer createConfidentAnalyzer() {
-        return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField(), new SubtractIntersectLimitShuffler());
+        return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField(), limitShuffler);
     }
 
     private GuessingAnalyzer createGuessingAnalyzer() {

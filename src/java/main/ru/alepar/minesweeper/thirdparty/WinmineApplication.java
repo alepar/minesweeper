@@ -7,13 +7,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import ru.alepar.minesweeper.Solver;
+import ru.alepar.minesweeper.analyzer.CountingLimitShuffler;
+import ru.alepar.minesweeper.analyzer.LimitShuffler;
+import ru.alepar.minesweeper.analyzer.SubtractIntersectLimitShuffler;
 import ru.alepar.minesweeper.core.SimpleFieldApi;
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
 import ru.alepar.minesweeper.fieldstate.FieldPreopener;
 import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.FieldApi;
 import ru.alepar.minesweeper.model.FieldState;
-import ru.alepar.minesweeper.model.SteppedOnABomb;
 
 public class WinmineApplication {
 
@@ -61,15 +63,6 @@ public class WinmineApplication {
     }
 
     public static void main(String[] args) throws Exception {
-        Date start = new Date();
-        for(int i=0; i<50; i++) {
-            solvesMinesweeperExpertSizedButWithSmallerAmountOfBombsPreopenedCase();
-        }
-        Date end = new Date();
-        System.err.println("took " + ((end.getTime() - start.getTime()) / 1000) + "s");
-    }
-    
-        public static void solvesMinesweeperExpertSizedButWithSmallerAmountOfBombsPreopenedCase() throws Exception {
         ArrayFieldState fullField = new FieldStateFixtureBuilder()
                 .row("   1x1    11112x3x2 1111x22x1 ")
                 .row("   11211124x22x33x312x223x211 ")
@@ -88,16 +81,22 @@ public class WinmineApplication {
                 .row("xx11x212xx2 111 2x2223112x3x1 ")
                 .row("22112x12x31 1x1 2x21x2x12x311 ")
             .build();
-
         ArrayFieldState startField = new FieldPreopener().preopen(fullField);
 
+        CountingLimitShuffler limitShuffler = new CountingLimitShuffler(new SubtractIntersectLimitShuffler());
+
+        Date start = new Date();
         FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
 
-        Solver solver = new Solver(fieldApi);
-        FieldState state = solver.solve();
+        Solver solver = new Solver(fieldApi, limitShuffler);
+        solver.solve();
+        Date end = new Date();
+
+        System.out.println("took " + (end.getTime() - start.getTime()) + "ms");
+        System.out.println("made shuffles " + limitShuffler.getCount());
     }
-        
-        public static class FieldStateFixtureBuilder {
+
+    public static class FieldStateFixtureBuilder {
 
     private static final Map<Character, Cell> translateMap;
 

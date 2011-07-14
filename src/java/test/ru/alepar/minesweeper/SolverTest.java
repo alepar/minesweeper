@@ -2,6 +2,7 @@ package ru.alepar.minesweeper;
 
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import ru.alepar.minesweeper.analyzer.SubtractIntersectLimitShuffler;
 import ru.alepar.minesweeper.core.SimpleFieldApi;
 import ru.alepar.minesweeper.fieldstate.ArrayFieldState;
 import ru.alepar.minesweeper.fieldstate.FieldPreopener;
@@ -30,7 +31,7 @@ public class SolverTest {
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
 
-        Solver solver = new Solver(fieldApi);
+        Solver solver = new Solver(fieldApi, new SubtractIntersectLimitShuffler());
         FieldState state = solver.solve();
 
         assertThat(state, Matchers.<FieldState>equalTo(full));
@@ -61,7 +62,7 @@ public class SolverTest {
 
         FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
 
-        Solver solver = new Solver(fieldApi);
+        Solver solver = new Solver(fieldApi, new SubtractIntersectLimitShuffler());
         FieldState state = solver.solve();
 
         assertThat(state, Matchers.<FieldState>equalTo(fullField ));
@@ -92,7 +93,7 @@ public class SolverTest {
 
         FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
 
-        Solver solver = new Solver(fieldApi);
+        Solver solver = new Solver(fieldApi, new SubtractIntersectLimitShuffler());
         FieldState state = solver.solve();
 
         assertThat(state, Matchers.<FieldState>equalTo(fullField ));
@@ -112,7 +113,7 @@ public class SolverTest {
 
         FieldApi fieldApi = new SimpleFieldApi(fullField, startField);
 
-        Solver solver = new Solver(fieldApi);
+        Solver solver = new Solver(fieldApi, new SubtractIntersectLimitShuffler());
         try {
             assertThat(solver.solve(), Matchers.<FieldState>equalTo(fullField));
         } catch (SteppedOnABomb ignored) {
