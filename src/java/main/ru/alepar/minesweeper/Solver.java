@@ -46,7 +46,7 @@ public class Solver {
     }
 
     private ConfidentAnalyzer createConfidentAnalyzer() {
-        return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField());
+        return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField(), new SubtractIntersectLimitShuffler());
     }
 
     private GuessingAnalyzer createGuessingAnalyzer() {

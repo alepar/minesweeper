@@ -33,7 +33,7 @@ public class ConfidentAnalyzerTest {
         ConfidentAnalyzer.Result expected = new ConfidentAnalyzer.Result(toMark, Collections.<Point>emptySet());
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField(), new SubtractIntersectLimitShuffler());
         ConfidentAnalyzer.Result result = analyzer.solve();
 
         assertThat(result, equalTo(expected));
@@ -59,7 +59,7 @@ public class ConfidentAnalyzerTest {
         ConfidentAnalyzer.Result expected = new ConfidentAnalyzer.Result(toMark, Collections.<Point>emptySet());
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField(), new SubtractIntersectLimitShuffler());
         ConfidentAnalyzer.Result result = analyzer.solve();
 
         assertThat(result, equalTo(expected));
@@ -86,7 +86,7 @@ public class ConfidentAnalyzerTest {
         ConfidentAnalyzer.Result expected = new ConfidentAnalyzer.Result(toMark, toOpen);
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField(), new SubtractIntersectLimitShuffler());
         ConfidentAnalyzer.Result result = analyzer.solve();
 
         assertThat(result, equalTo(expected));
@@ -116,7 +116,7 @@ public class ConfidentAnalyzerTest {
         ConfidentAnalyzer.Result expected = new ConfidentAnalyzer.Result(toMark, toOpen);
 
         FieldApi fieldApi = new SimpleFieldApi(full, start);
-        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField());
+        ConfidentAnalyzer analyzer = new MinMaxAnalyzer(new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height()), fieldApi.getCurrentField(), new SubtractIntersectLimitShuffler());
         ConfidentAnalyzer.Result result = analyzer.solve();
 
         assertThat(result, equalTo(expected));

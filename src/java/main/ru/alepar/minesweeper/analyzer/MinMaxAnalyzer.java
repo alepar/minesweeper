@@ -17,10 +17,12 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
 
     private final PointFactory pointFactory;
     private final FieldState currentField;
+    private final LimitShuffler limitShuffler;
 
-    public MinMaxAnalyzer(PointFactory pointFactory, FieldState currentField) {
+    public MinMaxAnalyzer(PointFactory pointFactory, FieldState currentField, LimitShuffler limitShuffler) {
         this.pointFactory = pointFactory;
         this.currentField = currentField;
+        this.limitShuffler = limitShuffler;
     }
 
     @Override
@@ -32,7 +34,7 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
         return shuffleLimits(createLimits());
     }
 
-    private static Set<Limit> shuffleLimits(Set<Limit> limits) {
+    private Set<Limit> shuffleLimits(Set<Limit> limits) {
         Set<Limit> shuffledLimits = limits;
 
         do {
@@ -43,7 +45,7 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
         return shuffledLimits;
     }
 
-    private static Set<Limit> shuffleLimitsOneIteration(Set<Limit> limits) {
+    private Set<Limit> shuffleLimitsOneIteration(Set<Limit> limits) {
         limits = new HashSet<Limit>(limits);
         Set<Limit> shuffledLimits = new HashSet<Limit>();
 
@@ -54,64 +56,10 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
             shuffledLimits.add(first);
 
             for (Limit second : limits) {
-                shuffledLimits.addAll(shuffleLimitsPair(first, second));
+                shuffledLimits.addAll(limitShuffler.shuffleLimitsPair(first, second));
             }
         }
         return shuffledLimits;
-    }
-
-    private static Set<Limit> shuffleLimitsPair(Limit first, Limit second) {
-
-        if (first.region.contains(second.region)) {
-            return subtractRegion(first, second);
-        }
-
-        if (second.region.contains(first.region)) {
-            return subtractRegion(second, first);
-        }
-
-        Region intersect = first.region.intersect(second.region);
-        if (!intersect.points().isEmpty()) {
-            Set<Limit> result = new HashSet<Limit>();
-            result.add(
-                    new Limit(intersect,
-                            Math.max(
-                                    startLimitForIntersection(first, intersect),
-                                    startLimitForIntersection(second, intersect)
-                            ),
-                            Math.min(
-                                    endLimitForIntersection(first, intersect),
-                                    endLimitForIntersection(second, intersect)
-                            )
-                    )
-            );
-            return result;
-        }
-
-        return Collections.emptySet();
-    }
-
-    private static Set<Limit> subtractRegion(Limit outer, Limit inner) {
-        Region subtractRegion = outer.region.subtract(inner.region);
-        if (subtractRegion.points().isEmpty()) {
-            return Collections.emptySet();
-        }
-
-        Limit substraction = new Limit(
-                subtractRegion,
-                Math.max(0, outer.min - inner.max),
-                Math.max(0, outer.max - inner.min)
-        );
-
-        return Collections.singleton(substraction);
-    }
-
-    private static int startLimitForIntersection(Limit src, Region dst) {
-        return Math.max(0, src.min - src.region.points().size() + dst.points().size());
-    }
-
-    private static int endLimitForIntersection(Limit src, Region dst) {
-        return Math.min(src.max, dst.points().size());
     }
 
     private Result openDeterminedLimits(Set<Limit> limits) {
