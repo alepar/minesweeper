@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="WinmineApplication" type="Application" factoryName="Application">
-    <extension name="coverage" enabled="false" merge="false" />
+    <extension name="coverage" enabled="false" merge="false" runner="idea" />
     <option name="MAIN_CLASS_NAME" value="ru.alepar.minesweeper.thirdparty.WinmineApplication" />
     <option name="VM_PARAMETERS" value="-Xmx8m" />
     <option name="PROGRAM_PARAMETERS" value="" />
