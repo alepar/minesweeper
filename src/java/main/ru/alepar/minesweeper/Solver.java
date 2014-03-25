@@ -3,6 +3,10 @@ package ru.alepar.minesweeper;
 import ru.alepar.minesweeper.analyzer.*;
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.model.*;
+import ru.alepar.minesweeper.thirdparty.ResourceLauncher;
+import ru.alepar.minesweeper.thirdparty.User32;
+import ru.alepar.minesweeper.thirdparty.WinmineApplication;
+import ru.alepar.minesweeper.thirdparty.WinmineFieldApi;
 
 public class Solver {
 
@@ -15,8 +19,8 @@ public class Solver {
         this.fieldApi = fieldApi;
         this.limitShuffler = limitShuffler;
 
-        this.executor = new ResultExecutor(fieldApi);
         this.pointFactory = new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height());
+        this.executor = new ResultExecutor(fieldApi, pointFactory);
     }
 
     public FieldState solve() throws SteppedOnABomb {
@@ -53,6 +57,13 @@ public class Solver {
 
     private GuessingAnalyzer createGuessingAnalyzer() {
         return new LowestProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft());
+    }
+
+    public static void main(String[] args) throws SteppedOnABomb {
+        final WinmineApplication app = new WinmineApplication(User32.USER32, new ResourceLauncher());
+        final WinmineFieldApi fieldApi = new WinmineFieldApi(app.getWindow());
+        final Solver solver = new Solver(fieldApi, new SubtractIntersectLimitShuffler());
+        solver.solve();
     }
 
 }

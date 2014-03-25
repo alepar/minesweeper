@@ -3,10 +3,9 @@ package ru.alepar.minesweeper.analyzer;
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
+import ru.alepar.minesweeper.model.Region;
 
 import java.util.*;
-
-import static ru.alepar.minesweeper.core.PointFilters.*;
 
 public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
 
@@ -22,15 +21,16 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
 
     @Override
     public Point guessWhatToOpen() {
-        Set<Point> closedCells = filter(pointFactory.allPoints(), closedCellsOn(currentField));
+        final Region closedCells = pointFactory.closedCellsOn(currentField);
+        final Region openedCells = pointFactory.openedCellsOn(currentField);
         if(closedCells.isEmpty()) {
             throw new RuntimeException("there are no closed cells to choose from");
         }
 
-        Set<Point> borderPoints = new HashSet<Point>();
-        Set<Point> innerPoints = new HashSet<Point>();
-        for (Point p : closedCells) {
-            if(filter(pointFactory.adjacentTo(p), openedCellsOn(currentField)).isEmpty()) {
+        Set<Point> borderPoints = new HashSet<>();
+        Set<Point> innerPoints = new HashSet<>();
+        for (Point p : pointFactory.toPoints(closedCells)) {
+            if(pointFactory.adjacentTo(p).intersect(openedCells).isEmpty()) {
                 innerPoints.add(p);
             } else {
                 borderPoints.add(p);
@@ -40,17 +40,17 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
         MinMaxAnalyzer minMaxAnalyzer = new MinMaxAnalyzer(pointFactory, currentField, new SubtractIntersectLimitShuffler());
         Set<Limit> limits = minMaxAnalyzer.shuffledLimits();
 
-        Map<Point, Double> probability = new HashMap<Point, Double>(borderPoints.size());
+        Map<Point, Double> probability = new HashMap<>(borderPoints.size());
         for (Limit limit : limits) {
             Double limitProbability = calculateProbabilityFor(limit);
-            for (Point p : limit.region.points()) {
+            for (Point p : pointFactory.toPoints(limit.region)) {
                 if(!probability.containsKey(p) || probability.get(p) < limitProbability) {
                     probability.put(p, limitProbability);
                 }
             }
         }
 
-        SortedSet<ProbabilityPoint> guessing = new TreeSet<ProbabilityPoint>();
+        SortedSet<ProbabilityPoint> guessing = new TreeSet<>();
         for (Map.Entry<Point, Double> entry : probability.entrySet()) {
             guessing.add(new ProbabilityPoint(entry.getKey(), entry.getValue()));
         }
@@ -68,8 +68,8 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
     private static Double calculateProbabilityFor(Limit limit) {
         int in=0, total=0;
         for(int i=limit.min; i<=limit.max; i++) {
-            in += c(limit.region.points().size()-1, i-1);
-            total += c(limit.region.points().size(), i);
+            in += c(limit.region.size()-1, i-1);
+            total += c(limit.region.size(), i);
         }
         return ((double)in)/total;
     }

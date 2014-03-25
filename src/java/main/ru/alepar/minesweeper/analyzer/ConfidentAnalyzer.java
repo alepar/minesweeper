@@ -1,6 +1,7 @@
 package ru.alepar.minesweeper.analyzer;
 
 import ru.alepar.minesweeper.model.Point;
+import ru.alepar.minesweeper.model.Region;
 
 import java.util.Set;
 
@@ -8,10 +9,10 @@ public interface ConfidentAnalyzer {
     Result solve();
 
     public class Result {
-        public final Set<Point> toOpen;
-        public final Set<Point> toMark;
+        public final Region toOpen;
+        public final Region toMark;
 
-        public Result(Set<Point> toMark, Set<Point> toOpen) {
+        public Result(Region toMark, Region toOpen) {
             this.toMark = toMark;
             this.toOpen = toOpen;
         }

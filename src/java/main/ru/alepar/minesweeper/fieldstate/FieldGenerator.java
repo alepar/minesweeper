@@ -4,8 +4,8 @@ import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.Point;
 
+import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 public class FieldGenerator {
 
@@ -31,7 +31,7 @@ public class FieldGenerator {
         for (int y=0; y<height; y++) {
             for (int x=0; x<width; x++) {
                 if (cells[y][x] == null) {
-                    Set<Point> neighbours = pointFactory.adjacentTo(new Point(x, y));
+                    final List<Point> neighbours = pointFactory.toPoints(pointFactory.adjacentTo(new Point(x, y)));
                     int bombCount = 0;
                     for (Point neighbour : neighbours) {
                         if (cells[neighbour.y][neighbour.x] == Cell.BOMB) {

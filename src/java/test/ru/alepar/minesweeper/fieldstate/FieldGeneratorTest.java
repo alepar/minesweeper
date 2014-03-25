@@ -57,7 +57,7 @@ public class FieldGeneratorTest {
                 Cell curCell = field.cellAt(curPoint);
                 if(curCell.isOpened()) {
                     int numOfNeighbourBombs = 0;
-                    for (Point neighbour : pointFactory.adjacentTo(curPoint)) {
+                    for (Point neighbour : pointFactory.toPoints(pointFactory.adjacentTo(curPoint))) {
                         if(field.cellAt(neighbour) == Cell.BOMB) {
                             numOfNeighbourBombs++;
                         }

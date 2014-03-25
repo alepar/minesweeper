@@ -6,12 +6,8 @@ import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 import ru.alepar.minesweeper.model.Region;
 
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
-
-import static ru.alepar.minesweeper.core.PointFilters.*;
 
 public class MinMaxAnalyzer implements ConfidentAnalyzer {
 
@@ -36,12 +32,12 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
 
     private Set<Limit> shuffleLimits(Set<Limit> limits) {
         Set<Limit> last = limits;
-        Set<Limit> prev = new HashSet<Limit>();
+        Set<Limit> prev = new HashSet<>();
 
         while(true) {
             Set<Limit> current = shuffleLimitsOneIteration(prev, last);
             prev.addAll(last);
-            last = new HashSet<Limit>(current);
+            last = new HashSet<>(current);
 
             current.removeAll(prev);
             if(current.isEmpty()) {
@@ -53,7 +49,7 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
     }
 
     private Set<Limit> shuffleLimitsOneIteration(Set<Limit> prev, Set<Limit> last) {
-        Set<Limit> result = new HashSet<Limit>();
+        Set<Limit> result = new HashSet<>();
 
         for (Limit first : last) {
             for (Limit second : prev) {
@@ -70,32 +66,33 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
     }
 
     private Result openDeterminedLimits(Set<Limit> limits) {
-        Set<Point> toOpen = new HashSet<Point>();
-        Set<Point> toMark = new HashSet<Point>();
+        final Region toOpen = pointFactory.emptyRegion();
+        final Region toMark = pointFactory.emptyRegion();
         for (Limit limit : limits) {
             if (limit.min == 0 && limit.max == 0) {
-                for (Point p : limit.region.points()) {
-                    toOpen.add(p);
-                }
-            } else if (limit.min == limit.region.points().size()) {
-                for (Point p : limit.region.points()) {
-                    toMark.add(p);
-                }
+                toOpen.or(limit.region);
+            } else if (limit.min == limit.region.size()) {
+                toMark.or(limit.region);
             }
         }
         return new Result(toMark, toOpen);
     }
 
     private Set<Limit> createLimits() {
-        Set<Limit> result = new HashSet<Limit>();
+        final Set<Limit> result = new HashSet<>();
+        final Region closedCells = pointFactory.closedCellsOn(currentField);
+        final Region bombCellsOn = pointFactory.bombCellsOn(currentField);
+
         for (Point p : pointFactory.allPoints()) {
-            Cell cell = currentField.cellAt(p);
+            final Cell cell = currentField.cellAt(p);
             if (cell.isOpened()) {
-                Set<Point> closedNeighbours = filter(pointFactory.adjacentTo(p), closedCellsOn(currentField));
-                Set<Point> discoveredBombNeighbours = filter(pointFactory.adjacentTo(p), bombCellsOn(currentField));
-                int bombsLeftUndiscovered = cell.value - discoveredBombNeighbours.size();
-                Region region = new Region(closedNeighbours).subtract(new Region(discoveredBombNeighbours));
-                if (!region.points().isEmpty()) {
+                final Region neighbours = pointFactory.adjacentTo(p);
+                final Region closedNeighbours = neighbours.intersect(closedCells);
+                final Region discoveredBombNeighbours = neighbours.intersect(bombCellsOn);
+
+                final int bombsLeftUndiscovered = cell.value - discoveredBombNeighbours.size();
+                final Region region = closedNeighbours.subtract(discoveredBombNeighbours);
+                if (!region.isEmpty()) {
                     result.add(new Limit(region, bombsLeftUndiscovered, bombsLeftUndiscovered));
                 }
             }

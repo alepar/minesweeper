@@ -18,8 +18,8 @@ public class SubtractIntersectLimitShuffler implements LimitShuffler {
         }
 
         Region intersect = first.region.intersect(second.region);
-        if (!intersect.points().isEmpty()) {
-            Set<Limit> result = new HashSet<Limit>();
+        if (!intersect.isEmpty()) {
+            Set<Limit> result = new HashSet<>();
             result.add(
                     new Limit(intersect,
                             Math.max(
@@ -40,7 +40,7 @@ public class SubtractIntersectLimitShuffler implements LimitShuffler {
 
     private static Set<Limit> subtractRegion(Limit outer, Limit inner) {
         Region subtractRegion = outer.region.subtract(inner.region);
-        if (subtractRegion.points().isEmpty()) {
+        if (subtractRegion.isEmpty()) {
             return Collections.emptySet();
         }
 
@@ -54,11 +54,11 @@ public class SubtractIntersectLimitShuffler implements LimitShuffler {
     }
 
     private static int startLimitForIntersection(Limit src, Region dst) {
-        return Math.max(0, src.min - src.region.points().size() + dst.points().size());
+        return Math.max(0, src.min - src.region.size() + dst.size());
     }
 
     private static int endLimitForIntersection(Limit src, Region dst) {
-        return Math.min(src.max, dst.points().size());
+        return Math.min(src.max, dst.size());
     }
 
 }
