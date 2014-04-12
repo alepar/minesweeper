@@ -8,12 +8,26 @@ import ru.alepar.minesweeper.thirdparty.User32;
 import ru.alepar.minesweeper.thirdparty.WinmineApplication;
 import ru.alepar.minesweeper.thirdparty.WinmineFieldApi;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+
 public class Solver {
 
     private final FieldApi fieldApi;
     private final ResultExecutor executor;
     private final PointFactory pointFactory;
     private final LimitShuffler limitShuffler;
+    private final Writer writer = createWriter();
+
+    private static BufferedWriter createWriter() {
+        try {
+            return new BufferedWriter(new FileWriter("output.tsv"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public Solver(FieldApi fieldApi, LimitShuffler limitShuffler) {
         this.fieldApi = fieldApi;
@@ -24,19 +38,25 @@ public class Solver {
     }
 
     public FieldState solve() throws SteppedOnABomb {
-        FieldState last;
-        FieldState current = fieldApi.getCurrentField();
-        while (true) {
-            do {
-                last = current;
-                current = executor.execute(createConfidentAnalyzer().solve());
-            } while (!last.equals(current));
+        try {
+            FieldState last;
+            FieldState current = fieldApi.getCurrentField();
+            while (true) {
+                do {
+                    last = current;
+                    current = executor.execute(createConfidentAnalyzer().solve());
+                } while (!last.equals(current));
 
-            if(!hasClosedCells(current)) {
-                return current;
+                if(!hasClosedCells(current)) {
+                    return current;
+                }
+
+                fieldApi.open(createGuessingAnalyzer().guessWhatToOpen());
             }
-
-            fieldApi.open(createGuessingAnalyzer().guessWhatToOpen());
+        } finally {
+            try {
+                writer.close();
+            } catch (IOException ignored) { }
         }
     }
 
@@ -52,18 +72,22 @@ public class Solver {
     }
 
     private ConfidentAnalyzer createConfidentAnalyzer() {
-        return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField(), limitShuffler);
+        return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField(), limitShuffler, writer);
     }
 
     private GuessingAnalyzer createGuessingAnalyzer() {
-        return new LowestProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft());
+        return new LowestProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft(), writer);
     }
 
     public static void main(String[] args) throws SteppedOnABomb {
         final WinmineApplication app = new WinmineApplication(User32.USER32, new ResourceLauncher());
-        final WinmineFieldApi fieldApi = new WinmineFieldApi(app.getWindow());
-        final Solver solver = new Solver(fieldApi, new SubtractIntersectLimitShuffler());
-        solver.solve();
+        try {
+            final WinmineFieldApi fieldApi = new WinmineFieldApi(app.getWindow());
+            final Solver solver = new Solver(fieldApi, new SubtractIntersectLimitShuffler());
+            solver.solve();
+        } finally {
+//            app.close();
+        }
     }
 
 }

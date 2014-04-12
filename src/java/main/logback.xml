@@ -7,9 +7,9 @@
     </appender>
 
     <logger name="" level="WARN"/>
-    <logger name="ru.alepar" level="DEBUG"/>
+    <logger name="ru.alepar" level="TRACE"/>
 
-    <root level="debug">
+    <root level="TRACE">
         <appender-ref ref="STDOUT"/>
     </root>
 

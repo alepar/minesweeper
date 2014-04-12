@@ -1,24 +1,38 @@
 package ru.alepar.minesweeper.analyzer;
 
+import com.google.common.base.Stopwatch;
+import org.omg.CORBA.REBIND;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.alepar.minesweeper.core.PointFactory;
 import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 import ru.alepar.minesweeper.model.Region;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class MinMaxAnalyzer implements ConfidentAnalyzer {
+
+    private static final Logger log = LoggerFactory.getLogger(MinMaxAnalyzer.class);
 
     private final PointFactory pointFactory;
     private final FieldState currentField;
     private final LimitShuffler limitShuffler;
 
-    public MinMaxAnalyzer(PointFactory pointFactory, FieldState currentField, LimitShuffler limitShuffler) {
+    private final Writer writer;
+
+    private int iteration;
+
+    public MinMaxAnalyzer(PointFactory pointFactory, FieldState currentField, LimitShuffler limitShuffler, Writer writer) {
         this.pointFactory = pointFactory;
         this.currentField = currentField;
         this.limitShuffler = limitShuffler;
+        this.writer = writer;
     }
 
     @Override
@@ -37,18 +51,22 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
         while(true) {
             Set<Limit> current = shuffleLimitsOneIteration(prev, last);
             prev.addAll(last);
-            last = new HashSet<>(current);
+            last = current;
 
-            current.removeAll(prev);
-            if(current.isEmpty()) {
+            last.removeAll(prev);
+            if(last.isEmpty()) {
                 break;
             }
+            log.warn("shuffleLimitsOneIteration()#{} added {} limits", iteration, current.size());
+            iteration++;
         }
 
         return prev;
     }
 
     private Set<Limit> shuffleLimitsOneIteration(Set<Limit> prev, Set<Limit> last) {
+        final Stopwatch stopwatch = Stopwatch.createStarted();
+
         Set<Limit> result = new HashSet<>();
 
         for (Limit first : last) {
@@ -62,6 +80,16 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
             }
         }
 
+
+        log.warn("shuffleLimitsOneIteration()#{} took {}ms, {} limits", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS), result.size());
+
+        try {
+            for (Limit limit : result) {
+                writer.write(String.valueOf(iteration) + '\t' + limit.region.hashCode() + '\t' + limit.min + '\t' + limit.max + '\n');
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return result;
     }
 
@@ -97,6 +125,7 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
                 }
             }
         }
+
         return result;
     }
 }

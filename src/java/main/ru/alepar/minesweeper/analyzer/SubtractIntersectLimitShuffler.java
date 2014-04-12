@@ -1,5 +1,10 @@
 package ru.alepar.minesweeper.analyzer;
 
+/*1. 'elaborating' limits
+2. only elaborated limits - shuffle
+3. if elaborated limit is determined - substract it from the rest
+4. amount of unique limits? cache substract/intersect? lightweight pattern and reference equality? cache hashcodes? */
+
 import ru.alepar.minesweeper.model.Region;
 
 import java.util.Collections;

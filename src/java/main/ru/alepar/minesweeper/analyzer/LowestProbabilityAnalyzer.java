@@ -5,6 +5,7 @@ import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 import ru.alepar.minesweeper.model.Region;
 
+import java.io.Writer;
 import java.util.*;
 
 public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
@@ -12,11 +13,13 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
     private final PointFactory pointFactory;
     private final FieldState currentField;
     private final int bombsLeft;
+    private final Writer writer;
 
-    public LowestProbabilityAnalyzer(PointFactory pointFactory, FieldState currentField, int bombsLeft) {
+    public LowestProbabilityAnalyzer(PointFactory pointFactory, FieldState currentField, int bombsLeft, Writer writer) {
         this.pointFactory = pointFactory;
         this.currentField = currentField;
         this.bombsLeft = bombsLeft;
+        this.writer = writer;
     }
 
     @Override
@@ -37,7 +40,7 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
             }
         }
 
-        MinMaxAnalyzer minMaxAnalyzer = new MinMaxAnalyzer(pointFactory, currentField, new SubtractIntersectLimitShuffler());
+        MinMaxAnalyzer minMaxAnalyzer = new MinMaxAnalyzer(pointFactory, currentField, new SubtractIntersectLimitShuffler(), writer);
         Set<Limit> limits = minMaxAnalyzer.shuffledLimits();
 
         Map<Point, Double> probability = new HashMap<>(borderPoints.size());
