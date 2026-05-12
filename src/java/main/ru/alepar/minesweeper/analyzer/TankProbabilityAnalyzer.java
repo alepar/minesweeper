@@ -1,6 +1,7 @@
 package ru.alepar.minesweeper.analyzer;
 
 import ru.alepar.minesweeper.core.PointFactory;
+import ru.alepar.minesweeper.model.Cell;
 import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 import ru.alepar.minesweeper.model.Region;
@@ -65,12 +66,19 @@ public class TankProbabilityAnalyzer implements GuessingAnalyzer {
 
         // Cells touched by any limit -- the "constrained" cells. Everything
         // else closed is unconstrained and gets the residual prior.
+        // Cell.CLOSED and Cell.BOMB both have isOpened()=false, so
+        // closedCellsOn() includes already-marked bombs; those must NOT enter
+        // the unconstrained pool or the picker will happily try to open them.
         final Set<Point> constrained = new HashSet<>();
         for (Limit l : limits) {
             constrained.addAll(pointFactory.toPoints(l.region));
         }
-        final Set<Point> unconstrained = new HashSet<>(pointFactory.toPoints(closedCells));
-        unconstrained.removeAll(constrained);
+        final Set<Point> unconstrained = new HashSet<>();
+        for (Point p : pointFactory.toPoints(closedCells)) {
+            if (currentField.cellAt(p) != Cell.BOMB && !constrained.contains(p)) {
+                unconstrained.add(p);
+            }
+        }
 
         final List<Component> components = findComponents(limits);
 
