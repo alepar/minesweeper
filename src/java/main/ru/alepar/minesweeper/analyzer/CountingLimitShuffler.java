@@ -1,7 +1,5 @@
 package ru.alepar.minesweeper.analyzer;
 
-import org.omg.PortableServer.portable.Delegate;
-
 import java.util.Set;
 
 public class CountingLimitShuffler implements LimitShuffler {
