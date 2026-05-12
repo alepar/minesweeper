@@ -59,7 +59,15 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
         }
 
         if (!innerPoints.isEmpty()) {
-            double innerProbability = ((double) bombsLeft) / innerPoints.size();
+            // Bombs already accounted for by border limits should not be
+            // re-charged against inner cells. Using the sum of per-border-cell
+            // probabilities as an estimator for E[border bombs].
+            double expectedBorderBombs = 0.0;
+            for (Double p : probability.values()) {
+                expectedBorderBombs += p;
+            }
+            double remainingForInner = Math.max(0.0, bombsLeft - expectedBorderBombs);
+            double innerProbability = remainingForInner / innerPoints.size();
             for (Point point : innerPoints) {
                 guessing.add(new ProbabilityPoint(point, innerProbability));
             }
