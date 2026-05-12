@@ -36,10 +36,11 @@ import java.util.TreeSet;
  */
 public class TankProbabilityAnalyzer implements GuessingAnalyzer {
 
-    // 2^24 = ~16M masks. Per mask the inner check is O(L) Long.bitCounts, so
-    // a 24-cell / ~10-limit component costs roughly 100-200 ms. Components
-    // larger than this fall back to max-aggregation.
-    private static final int BRUTE_FORCE_LIMIT = 24;
+    // Backtracking packs the per-cell assignment into a single long, so 64
+    // cells per component is the hard ceiling. Pruning collapses the search
+    // tree well below the naive 2^N in practice. Components larger than this
+    // fall back to per-limit max-aggregation.
+    private static final int MAX_COMPONENT_SIZE = 64;
 
     private final PointFactory pointFactory;
     private final FieldState currentField;
@@ -198,7 +199,7 @@ public class TankProbabilityAnalyzer implements GuessingAnalyzer {
 
     private ComponentResult enumerateComponent(Component c) {
         int n = c.cells.size();
-        if (n == 0 || n > BRUTE_FORCE_LIMIT) return null;
+        if (n == 0 || n > MAX_COMPONENT_SIZE) return null;
 
         Map<Point, Integer> cellIdx = new HashMap<>(n * 2);
         for (int i = 0; i < n; i++) {
@@ -221,27 +222,114 @@ public class TankProbabilityAnalyzer implements GuessingAnalyzer {
             maxs[i] = l.max;
         }
 
-        long[] bombCounts = new long[n];
-        long totalValid = 0L;
-
-        final long total = 1L << n;
-        for (long a = 0L; a < total; a++) {
-            boolean valid = true;
-            for (int i = 0; i < L; i++) {
-                int cnt = Long.bitCount(a & regionMasks[i]);
-                if (cnt < mins[i] || cnt > maxs[i]) { valid = false; break; }
-            }
-            if (valid) {
-                totalValid++;
-                long m = a;
-                while (m != 0L) {
-                    int j = Long.numberOfTrailingZeros(m);
-                    bombCounts[j]++;
-                    m &= m - 1L;
-                }
+        // For each cell, a bitmask of the limit indices that contain it.
+        // Lets backtracking touch only the affected limits when assigning a cell.
+        long[] cellLimitMask = new long[n];
+        for (int i = 0; i < L; i++) {
+            long m = regionMasks[i];
+            while (m != 0L) {
+                int j = Long.numberOfTrailingZeros(m);
+                cellLimitMask[j] |= 1L << i;
+                m &= m - 1L;
             }
         }
-        return new ComponentResult(bombCounts, totalValid);
+
+        BacktrackState st = new BacktrackState();
+        st.n = n;
+        st.bombCount = new int[L];
+        st.undecided = new int[L];
+        for (int i = 0; i < L; i++) {
+            st.undecided[i] = Long.bitCount(regionMasks[i]);
+        }
+        st.mins = mins;
+        st.maxs = maxs;
+        st.cellLimitMask = cellLimitMask;
+        st.cellBombCounts = new long[n];
+        st.assignment = 0L;
+        st.totalValid = 0L;
+
+        backtrack(st, 0);
+        return new ComponentResult(st.cellBombCounts, st.totalValid);
+    }
+
+    private static void backtrack(BacktrackState s, int idx) {
+        if (idx == s.n) {
+            s.totalValid++;
+            long m = s.assignment;
+            while (m != 0L) {
+                int j = Long.numberOfTrailingZeros(m);
+                s.cellBombCounts[j]++;
+                m &= m - 1L;
+            }
+            return;
+        }
+
+        final long memb = s.cellLimitMask[idx];
+
+        // Try cell = not bomb: each affected limit loses one undecided slot.
+        // Feasibility fails only if any limit's remaining capacity drops below
+        // its min bomb requirement.
+        boolean feasible = true;
+        long m = memb;
+        while (m != 0L) {
+            int l = Long.numberOfTrailingZeros(m);
+            s.undecided[l]--;
+            if (s.bombCount[l] + s.undecided[l] < s.mins[l]) {
+                feasible = false;
+            }
+            m &= m - 1L;
+        }
+        if (feasible) {
+            backtrack(s, idx + 1);
+        }
+        // restore
+        m = memb;
+        while (m != 0L) {
+            int l = Long.numberOfTrailingZeros(m);
+            s.undecided[l]++;
+            m &= m - 1L;
+        }
+
+        // Try cell = bomb: each affected limit gains a bomb and loses one
+        // undecided slot. Feasibility fails if any limit's bomb count exceeds
+        // its max OR its remaining capacity drops below its min.
+        feasible = true;
+        m = memb;
+        while (m != 0L) {
+            int l = Long.numberOfTrailingZeros(m);
+            s.bombCount[l]++;
+            s.undecided[l]--;
+            if (s.bombCount[l] > s.maxs[l]
+                    || s.bombCount[l] + s.undecided[l] < s.mins[l]) {
+                feasible = false;
+            }
+            m &= m - 1L;
+        }
+        if (feasible) {
+            s.assignment |= 1L << idx;
+            backtrack(s, idx + 1);
+            s.assignment &= ~(1L << idx);
+        }
+        // restore
+        m = memb;
+        while (m != 0L) {
+            int l = Long.numberOfTrailingZeros(m);
+            s.bombCount[l]--;
+            s.undecided[l]++;
+            m &= m - 1L;
+        }
+    }
+
+    private static final class BacktrackState {
+        int n;
+        int[] bombCount;
+        int[] undecided;
+        int[] mins;
+        int[] maxs;
+        long[] cellLimitMask;
+        long[] cellBombCounts;
+        long assignment;
+        long totalValid;
     }
 
     private static double perLimitProbability(Limit limit) {
