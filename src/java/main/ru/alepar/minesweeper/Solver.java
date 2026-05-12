@@ -56,7 +56,20 @@ public class Solver {
                     return current;
                 }
 
-                fieldApi.open(createGuessingAnalyzer().guessWhatToOpen());
+                // Tank analysis runs the same enumeration we'd need for guessing
+                // anyway. While we're there, harvest forced moves the local-only
+                // MinMax propagator couldn't see -- cells that are bombs (or safe)
+                // in every globally-consistent placement of their component. If
+                // we found any, act on them and re-run the MinMax loop on the
+                // new state; only fall through to guessing once tank is also out
+                // of certainties.
+                TankProbabilityAnalyzer.Analysis analysis = createTankAnalyzer().analyze();
+                if (analysis.hasCertainties()) {
+                    current = executor.execute(analysis.certaintiesAsResult(pointFactory));
+                    continue;
+                }
+
+                fieldApi.open(analysis.pickLowestProbability());
             }
         } finally {
             if (writer != null) {
@@ -82,7 +95,7 @@ public class Solver {
         return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField(), limitShuffler, writer);
     }
 
-    private GuessingAnalyzer createGuessingAnalyzer() {
+    private TankProbabilityAnalyzer createTankAnalyzer() {
         return new TankProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft(), writer);
     }
 
