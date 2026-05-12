@@ -41,7 +41,7 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
         }
 
         MinMaxAnalyzer minMaxAnalyzer = new MinMaxAnalyzer(pointFactory, currentField, new SubtractIntersectLimitShuffler(), writer);
-        Set<Limit> limits = minMaxAnalyzer.shuffledLimits();
+        Collection<Limit> limits = minMaxAnalyzer.shuffledLimits();
 
         Map<Point, Double> probability = new HashMap<>(borderPoints.size());
         for (Limit limit : limits) {
