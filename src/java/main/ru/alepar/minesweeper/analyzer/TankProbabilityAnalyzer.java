@@ -36,13 +36,11 @@ import java.util.TreeSet;
  */
 public class TankProbabilityAnalyzer implements GuessingAnalyzer {
 
-    // Backtracking ignores the global bombsLeft constraint: per-cell ratios
-    // from a big component overweight placements that pack many bombs into
-    // that component (globally impossible but locally satisfying its limits).
-    // Pending a proper joint solve, keep the cap at 24 -- still beats the
-    // old max-aggregation, and matches the brute-force R6 behaviour the
-    // benchmark validated.
-    private static final int MAX_COMPONENT_SIZE = 24;
+    // Backtracking packs the per-cell assignment into a single long, so 64
+    // cells per component is the hard ceiling. Pruning typically collapses
+    // the search well below the naive 2^N. Larger components fall back to
+    // per-limit max-aggregation.
+    private static final int MAX_COMPONENT_SIZE = 64;
 
     private final PointFactory pointFactory;
     private final FieldState currentField;
@@ -224,14 +222,28 @@ public class TankProbabilityAnalyzer implements GuessingAnalyzer {
             maxs[i] = l.max;
         }
 
-        // For each cell, a bitmask of the limit indices that contain it.
-        // Lets backtracking touch only the affected limits when assigning a cell.
-        long[] cellLimitMask = new long[n];
+        // For each cell, the limit indices that contain it -- so backtracking
+        // updates only those limits when the cell is decided. Plain int[] (not
+        // a long bitmask) because L can easily exceed 64 limits per component.
+        int[][] cellLimits = new int[n][];
+        int[] perCellLimitCount = new int[n];
         for (int i = 0; i < L; i++) {
             long m = regionMasks[i];
             while (m != 0L) {
                 int j = Long.numberOfTrailingZeros(m);
-                cellLimitMask[j] |= 1L << i;
+                perCellLimitCount[j]++;
+                m &= m - 1L;
+            }
+        }
+        for (int j = 0; j < n; j++) {
+            cellLimits[j] = new int[perCellLimitCount[j]];
+            perCellLimitCount[j] = 0;
+        }
+        for (int i = 0; i < L; i++) {
+            long m = regionMasks[i];
+            while (m != 0L) {
+                int j = Long.numberOfTrailingZeros(m);
+                cellLimits[j][perCellLimitCount[j]++] = i;
                 m &= m - 1L;
             }
         }
@@ -245,7 +257,7 @@ public class TankProbabilityAnalyzer implements GuessingAnalyzer {
         }
         st.mins = mins;
         st.maxs = maxs;
-        st.cellLimitMask = cellLimitMask;
+        st.cellLimits = cellLimits;
         st.cellBombCounts = new long[n];
         st.assignment = 0L;
         st.totalValid = 0L;
@@ -266,46 +278,39 @@ public class TankProbabilityAnalyzer implements GuessingAnalyzer {
             return;
         }
 
-        final long memb = s.cellLimitMask[idx];
+        final int[] memb = s.cellLimits[idx];
 
         // Try cell = not bomb: each affected limit loses one undecided slot.
         // Feasibility fails only if any limit's remaining capacity drops below
         // its min bomb requirement.
         boolean feasible = true;
-        long m = memb;
-        while (m != 0L) {
-            int l = Long.numberOfTrailingZeros(m);
+        for (int k = 0; k < memb.length; k++) {
+            int l = memb[k];
             s.undecided[l]--;
             if (s.bombCount[l] + s.undecided[l] < s.mins[l]) {
                 feasible = false;
             }
-            m &= m - 1L;
         }
         if (feasible) {
             backtrack(s, idx + 1);
         }
         // restore
-        m = memb;
-        while (m != 0L) {
-            int l = Long.numberOfTrailingZeros(m);
-            s.undecided[l]++;
-            m &= m - 1L;
+        for (int k = 0; k < memb.length; k++) {
+            s.undecided[memb[k]]++;
         }
 
         // Try cell = bomb: each affected limit gains a bomb and loses one
         // undecided slot. Feasibility fails if any limit's bomb count exceeds
         // its max OR its remaining capacity drops below its min.
         feasible = true;
-        m = memb;
-        while (m != 0L) {
-            int l = Long.numberOfTrailingZeros(m);
+        for (int k = 0; k < memb.length; k++) {
+            int l = memb[k];
             s.bombCount[l]++;
             s.undecided[l]--;
             if (s.bombCount[l] > s.maxs[l]
                     || s.bombCount[l] + s.undecided[l] < s.mins[l]) {
                 feasible = false;
             }
-            m &= m - 1L;
         }
         if (feasible) {
             s.assignment |= 1L << idx;
@@ -313,12 +318,10 @@ public class TankProbabilityAnalyzer implements GuessingAnalyzer {
             s.assignment &= ~(1L << idx);
         }
         // restore
-        m = memb;
-        while (m != 0L) {
-            int l = Long.numberOfTrailingZeros(m);
+        for (int k = 0; k < memb.length; k++) {
+            int l = memb[k];
             s.bombCount[l]--;
             s.undecided[l]++;
-            m &= m - 1L;
         }
     }
 
@@ -328,7 +331,7 @@ public class TankProbabilityAnalyzer implements GuessingAnalyzer {
         int[] undecided;
         int[] mins;
         int[] maxs;
-        long[] cellLimitMask;
+        int[][] cellLimits;
         long[] cellBombCounts;
         long assignment;
         long totalValid;
