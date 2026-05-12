@@ -36,11 +36,13 @@ import java.util.TreeSet;
  */
 public class TankProbabilityAnalyzer implements GuessingAnalyzer {
 
-    // Backtracking packs the per-cell assignment into a single long, so 64
-    // cells per component is the hard ceiling. Pruning collapses the search
-    // tree well below the naive 2^N in practice. Components larger than this
-    // fall back to per-limit max-aggregation.
-    private static final int MAX_COMPONENT_SIZE = 64;
+    // Backtracking ignores the global bombsLeft constraint: per-cell ratios
+    // from a big component overweight placements that pack many bombs into
+    // that component (globally impossible but locally satisfying its limits).
+    // Pending a proper joint solve, keep the cap at 24 -- still beats the
+    // old max-aggregation, and matches the brute-force R6 behaviour the
+    // benchmark validated.
+    private static final int MAX_COMPONENT_SIZE = 24;
 
     private final PointFactory pointFactory;
     private final FieldState currentField;
