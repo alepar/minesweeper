@@ -69,7 +69,7 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
     }
 
     private static Double calculateProbabilityFor(Limit limit) {
-        int in=0, total=0;
+        long in=0, total=0;
         for(int i=limit.min; i<=limit.max; i++) {
             in += c(limit.region.size()-1, i-1);
             total += c(limit.region.size(), i);
@@ -77,8 +77,8 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
         return ((double)in)/total;
     }
 
-    private static int c(int n, int k) {
-        int result = 1;
+    static long c(int n, int k) {
+        long result = 1L;
         for (int i=n-k+1; i<=n; i++) {
             result *= i;
         }
@@ -99,7 +99,7 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
 
         @Override
         public int compareTo(ProbabilityPoint that) {
-            return Double.compare(that.probability, this.probability);
+            return Double.compare(this.probability, that.probability);
         }
     }
 }
