@@ -3,3 +3,4 @@
 /.idea/*
 !/.idea/runConfigurations
 *.iml
+/output.tsv
