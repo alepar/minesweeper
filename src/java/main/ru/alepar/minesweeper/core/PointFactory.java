@@ -89,4 +89,12 @@ public class PointFactory {
     public Region emptyRegion() {
         return new Region(width*height);
     }
+
+    public int width() {
+        return width;
+    }
+
+    public int height() {
+        return height;
+    }
 }
