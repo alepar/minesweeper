@@ -19,9 +19,9 @@ public class Solver {
     private final ResultExecutor executor;
     private final PointFactory pointFactory;
     private final LimitShuffler limitShuffler;
-    private final Writer writer = createWriter();
+    private final Writer writer;
 
-    private static BufferedWriter createWriter() {
+    private static BufferedWriter createDefaultWriter() {
         try {
             return new BufferedWriter(new FileWriter("output.tsv"));
         } catch (IOException e) {
@@ -30,8 +30,13 @@ public class Solver {
     }
 
     public Solver(FieldApi fieldApi, LimitShuffler limitShuffler) {
+        this(fieldApi, limitShuffler, createDefaultWriter());
+    }
+
+    public Solver(FieldApi fieldApi, LimitShuffler limitShuffler, Writer writer) {
         this.fieldApi = fieldApi;
         this.limitShuffler = limitShuffler;
+        this.writer = writer;
 
         this.pointFactory = new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height());
         this.executor = new ResultExecutor(fieldApi, pointFactory);
