@@ -59,9 +59,11 @@ public class Solver {
                 fieldApi.open(createGuessingAnalyzer().guessWhatToOpen());
             }
         } finally {
-            try {
-                writer.close();
-            } catch (IOException ignored) { }
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ignored) { }
+            }
         }
     }
 

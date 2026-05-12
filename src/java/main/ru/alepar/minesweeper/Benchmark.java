@@ -11,8 +11,6 @@ import ru.alepar.minesweeper.model.FieldState;
 import ru.alepar.minesweeper.model.Point;
 import ru.alepar.minesweeper.model.SteppedOnABomb;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.Random;
@@ -36,7 +34,6 @@ public class Benchmark {
         }
 
         Random master = new Random(MASTER_SEED);
-        Writer nullWriter = new NullWriter();
         int totalNonBombCells = WIDTH * HEIGHT - BOMBS;
 
         long totalOpenedNonBomb = 0;
@@ -50,7 +47,7 @@ public class Benchmark {
             ArrayFieldState full = new FieldGenerator(WIDTH, HEIGHT, BOMBS, gameRandom).generate();
             ArrayFieldState start = new FieldPreopener().preopen(full);
             SimpleFieldApi api = new SimpleFieldApi(full, start);
-            Solver solver = new Solver(api, new SubtractIntersectLimitShuffler(), nullWriter);
+            Solver solver = new Solver(api, new SubtractIntersectLimitShuffler(), null);
 
             int openedAtEnd;
             long t0 = bean.getCurrentThreadCpuTime();
@@ -102,9 +99,4 @@ public class Benchmark {
         root.setLevel(Level.ERROR);
     }
 
-    private static final class NullWriter extends Writer {
-        @Override public void write(char[] cbuf, int off, int len) throws IOException { }
-        @Override public void flush() throws IOException { }
-        @Override public void close() throws IOException { }
-    }
 }

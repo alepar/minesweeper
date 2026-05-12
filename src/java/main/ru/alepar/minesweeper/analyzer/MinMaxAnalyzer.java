@@ -82,12 +82,14 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
 
         log.warn("shuffleLimitsOneIteration()#{} took {}ms, {} limits", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS), result.size());
 
-        try {
-            for (Limit limit : result) {
-                writer.write(String.valueOf(iteration) + '\t' + limit.region.hashCode() + '\t' + limit.min + '\t' + limit.max + '\n');
+        if (writer != null) {
+            try {
+                for (Limit limit : result) {
+                    writer.write(String.valueOf(iteration) + '\t' + limit.region.hashCode() + '\t' + limit.min + '\t' + limit.max + '\n');
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return result;
     }
