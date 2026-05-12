@@ -83,7 +83,7 @@ public class Solver {
     }
 
     private GuessingAnalyzer createGuessingAnalyzer() {
-        return new LowestProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft(), writer);
+        return new TankProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft(), writer);
     }
 
     public static void main(String[] args) throws SteppedOnABomb {
