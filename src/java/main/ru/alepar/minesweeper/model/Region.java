@@ -4,79 +4,95 @@ import java.util.Arrays;
 
 public final class Region {
 
-    private final boolean[] array;
+    private final int bits;
+    private final long[] words;
+
+    private int sizeCache = -1;
+    private int hashCache;
 
     public Region(int length) {
-        array = new boolean[length];
+        this.bits = length;
+        this.words = new long[(length + 63) >>> 6];
     }
 
-    public Region(boolean[] array) {
-        this.array = array;
+    private Region(int bits, long[] words) {
+        this.bits = bits;
+        this.words = words;
     }
 
     public int size() {
-        int res = 0;
-        for (boolean b : array) {
-            if (b) {
-                res++;
-            }
+        int cached = sizeCache;
+        if (cached >= 0) {
+            return cached;
         }
-        return res;
+        int s = 0;
+        for (long w : words) {
+            s += Long.bitCount(w);
+        }
+        sizeCache = s;
+        return s;
     }
 
     public Region intersect(Region that) {
-        final Region intersection = this.clone();
-        intersection.and(that);
-        return intersection;
+        long[] out = new long[words.length];
+        for (int i = 0; i < words.length; i++) {
+            out[i] = words[i] & that.words[i];
+        }
+        return new Region(bits, out);
     }
 
     public Region subtract(Region that) {
-        final Region mask = that.clone();
-        mask.invert();
-
-        final Region subtract = this.clone();
-        subtract.and(mask);
-
-        return subtract;
+        long[] out = new long[words.length];
+        for (int i = 0; i < words.length; i++) {
+            out[i] = words[i] & ~that.words[i];
+        }
+        return new Region(bits, out);
     }
 
+    // that ⊆ this  iff  that & ~this == 0
     public boolean contains(Region that) {
-        return that.subtract(this).isEmpty();
+        for (int i = 0; i < words.length; i++) {
+            if ((that.words[i] & ~words[i]) != 0L) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public Region clone() {
-        return new Region(Arrays.copyOf(array, array.length));
-    }
-
-    private void and(Region that) {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = array[i] & that.array[i];
-        }
-    }
-
-    private void invert() {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = !array[i];
-        }
+        return new Region(bits, Arrays.copyOf(words, words.length));
     }
 
     public void or(Region that) {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = array[i] | that.array[i];
+        for (int i = 0; i < words.length; i++) {
+            words[i] |= that.words[i];
         }
+        sizeCache = -1;
+        hashCache = 0;
     }
 
     public boolean get(int i) {
-        return array[i];
+        return (words[i >>> 6] & (1L << (i & 63))) != 0L;
     }
 
     public void set(int i) {
-        array[i] = true;
+        long mask = 1L << (i & 63);
+        int w = i >>> 6;
+        if ((words[w] & mask) == 0L) {
+            words[w] |= mask;
+            sizeCache = -1;
+            hashCache = 0;
+        }
     }
 
     public boolean isEmpty() {
-        return size() == 0;
+        for (long w : words) {
+            if (w != 0L) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -84,13 +100,21 @@ public final class Region {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Region region = (Region) o;
-
-        return Arrays.equals(array, region.array);
+        Region that = (Region) o;
+        return bits == that.bits && Arrays.equals(words, that.words);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(array);
+        int h = hashCache;
+        if (h != 0) {
+            return h;
+        }
+        h = Arrays.hashCode(words);
+        if (h == 0) {
+            h = 1;
+        }
+        hashCache = h;
+        return h;
     }
 }
