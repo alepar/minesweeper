@@ -19,9 +19,9 @@ public class Solver {
     private final ResultExecutor executor;
     private final PointFactory pointFactory;
     private final LimitShuffler limitShuffler;
-    private final Writer writer = createWriter();
+    private final Writer writer;
 
-    private static BufferedWriter createWriter() {
+    private static BufferedWriter createDefaultWriter() {
         try {
             return new BufferedWriter(new FileWriter("output.tsv"));
         } catch (IOException e) {
@@ -30,8 +30,13 @@ public class Solver {
     }
 
     public Solver(FieldApi fieldApi, LimitShuffler limitShuffler) {
+        this(fieldApi, limitShuffler, createDefaultWriter());
+    }
+
+    public Solver(FieldApi fieldApi, LimitShuffler limitShuffler, Writer writer) {
         this.fieldApi = fieldApi;
         this.limitShuffler = limitShuffler;
+        this.writer = writer;
 
         this.pointFactory = new PointFactory(fieldApi.getCurrentField().width(), fieldApi.getCurrentField().height());
         this.executor = new ResultExecutor(fieldApi, pointFactory);
@@ -51,12 +56,27 @@ public class Solver {
                     return current;
                 }
 
-                fieldApi.open(createGuessingAnalyzer().guessWhatToOpen());
+                // Tank analysis runs the same enumeration we'd need for guessing
+                // anyway. While we're there, harvest forced moves the local-only
+                // MinMax propagator couldn't see -- cells that are bombs (or safe)
+                // in every globally-consistent placement of their component. If
+                // we found any, act on them and re-run the MinMax loop on the
+                // new state; only fall through to guessing once tank is also out
+                // of certainties.
+                TankProbabilityAnalyzer.Analysis analysis = createTankAnalyzer().analyze();
+                if (analysis.hasCertainties()) {
+                    current = executor.execute(analysis.certaintiesAsResult(pointFactory));
+                    continue;
+                }
+
+                fieldApi.open(analysis.pickLowestProbability());
             }
         } finally {
-            try {
-                writer.close();
-            } catch (IOException ignored) { }
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException ignored) { }
+            }
         }
     }
 
@@ -75,8 +95,8 @@ public class Solver {
         return new MinMaxAnalyzer(pointFactory, fieldApi.getCurrentField(), limitShuffler, writer);
     }
 
-    private GuessingAnalyzer createGuessingAnalyzer() {
-        return new LowestProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft(), writer);
+    private TankProbabilityAnalyzer createTankAnalyzer() {
+        return new TankProbabilityAnalyzer(pointFactory, fieldApi.getCurrentField(), fieldApi.bombsLeft(), writer);
     }
 
     public static void main(String[] args) throws SteppedOnABomb {

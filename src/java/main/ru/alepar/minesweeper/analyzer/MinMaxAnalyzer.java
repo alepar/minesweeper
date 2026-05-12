@@ -1,7 +1,6 @@
 package ru.alepar.minesweeper.analyzer;
 
 import com.google.common.base.Stopwatch;
-import org.omg.CORBA.REBIND;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.alepar.minesweeper.core.PointFactory;
@@ -12,7 +11,10 @@ import ru.alepar.minesweeper.model.Region;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -40,60 +42,90 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
         return openDeterminedLimits(shuffledLimits());
     }
 
-    Set<Limit> shuffledLimits() {
+    Collection<Limit> shuffledLimits() {
         return shuffleLimits(createLimits());
     }
 
-    private Set<Limit> shuffleLimits(Set<Limit> limits) {
-        Set<Limit> last = limits;
-        Set<Limit> prev = new HashSet<>();
-
-        while(true) {
-            Set<Limit> current = shuffleLimitsOneIteration(prev, last);
-            prev.addAll(last);
-            last = current;
-
-            last.removeAll(prev);
-            if(last.isEmpty()) {
-                break;
+    private Collection<Limit> shuffleLimits(Set<Limit> initial) {
+        Map<Region, Limit> known = new HashMap<>();
+        Map<Region, Limit> last = new HashMap<>();
+        for (Limit l : initial) {
+            Limit tightened = installTightening(known, l);
+            if (tightened != null) {
+                last.put(l.region, tightened);
             }
-            log.warn("shuffleLimitsOneIteration()#{} added {} limits", iteration, current.size());
-            iteration++;
         }
 
-        return prev;
+        while (!last.isEmpty()) {
+            Map<Region, Limit> derived = shuffleLimitsOneIteration(known, last);
+
+            Map<Region, Limit> next = new HashMap<>();
+            for (Limit l : derived.values()) {
+                Limit tightened = installTightening(known, l);
+                if (tightened != null) {
+                    next.put(l.region, tightened);
+                }
+            }
+            log.warn("shuffleLimitsOneIteration()#{} added {} limits", iteration, next.size());
+            iteration++;
+            last = next;
+        }
+
+        return known.values();
     }
 
-    private Set<Limit> shuffleLimitsOneIteration(Set<Limit> prev, Set<Limit> last) {
+    private Map<Region, Limit> shuffleLimitsOneIteration(Map<Region, Limit> known, Map<Region, Limit> last) {
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
-        Set<Limit> result = new HashSet<>();
+        Map<Region, Limit> result = new HashMap<>();
 
-        for (Limit first : last) {
-            for (Limit second : prev) {
-                result.addAll(limitShuffler.shuffleLimitsPair(first, second));
-            }
-            for (Limit second : last) {
-                if (first != second) {
-                    result.addAll(limitShuffler.shuffleLimitsPair(first, second));
+        // Pair every "newly tightened" limit against every known limit (which
+        // includes the freshly-derived ones too). first != second guard avoids
+        // self-pair edge cases.
+        for (Limit first : last.values()) {
+            for (Limit second : known.values()) {
+                if (first == second) {
+                    continue;
+                }
+                for (Limit derived : limitShuffler.shuffleLimitsPair(first, second)) {
+                    installTightening(result, derived);
                 }
             }
         }
 
-
         log.warn("shuffleLimitsOneIteration()#{} took {}ms, {} limits", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS), result.size());
 
-        try {
-            for (Limit limit : result) {
-                writer.write(String.valueOf(iteration) + '\t' + limit.region.hashCode() + '\t' + limit.min + '\t' + limit.max + '\n');
+        if (writer != null) {
+            try {
+                for (Limit limit : result.values()) {
+                    writer.write(String.valueOf(iteration) + '\t' + limit.region.hashCode() + '\t' + limit.min + '\t' + limit.max + '\n');
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
         return result;
     }
 
-    private Result openDeterminedLimits(Set<Limit> limits) {
+    // Merges `l` into `map` by interval-intersection on its region key.
+    // Returns the resulting tightened/inserted Limit, or null if nothing changed.
+    private static Limit installTightening(Map<Region, Limit> map, Limit l) {
+        Limit cur = map.get(l.region);
+        if (cur == null) {
+            map.put(l.region, l);
+            return l;
+        }
+        int newMin = Math.max(cur.min, l.min);
+        int newMax = Math.min(cur.max, l.max);
+        if (newMin == cur.min && newMax == cur.max) {
+            return null;
+        }
+        Limit tighter = (newMin == l.min && newMax == l.max) ? l : new Limit(l.region, newMin, newMax);
+        map.put(l.region, tighter);
+        return tighter;
+    }
+
+    private Result openDeterminedLimits(Collection<Limit> limits) {
         final Region toOpen = pointFactory.emptyRegion();
         final Region toMark = pointFactory.emptyRegion();
         for (Limit limit : limits) {

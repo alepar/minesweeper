@@ -12,11 +12,17 @@ public class FieldGenerator {
     private final int width;
     private final int height;
     private final int numOfBombs;
+    private final Random rnd;
 
     public FieldGenerator(int width, int height, int numOfBombs) {
+        this(width, height, numOfBombs, new Random());
+    }
+
+    public FieldGenerator(int width, int height, int numOfBombs, Random rnd) {
         this.width = width;
         this.height = height;
         this.numOfBombs = numOfBombs;
+        this.rnd = rnd;
     }
 
     public ArrayFieldState generate() {
@@ -46,7 +52,6 @@ public class FieldGenerator {
     }
 
     private void fillBombs(Cell[][] cells) {
-        Random rnd = new Random();
         for(int bomb=0; bomb<numOfBombs; bomb++) {
             int rx;
             int ry;
