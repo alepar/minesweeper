@@ -43,12 +43,23 @@ public class LowestProbabilityAnalyzer implements GuessingAnalyzer {
         MinMaxAnalyzer minMaxAnalyzer = new MinMaxAnalyzer(pointFactory, currentField, new SubtractIntersectLimitShuffler(), writer);
         Collection<Limit> limits = minMaxAnalyzer.shuffledLimits();
 
+        // For each border cell, pick the per-limit probability coming from the
+        // smallest region that contains it: smaller regions concentrate the
+        // bomb count over fewer cells, giving a sharper estimate than averaging
+        // across a big diluted region. Ties broken by the larger probability
+        // (conservative for safety).
         Map<Point, Double> probability = new HashMap<>(borderPoints.size());
+        Map<Point, Integer> bestRegionSize = new HashMap<>(borderPoints.size());
         for (Limit limit : limits) {
             Double limitProbability = calculateProbabilityFor(limit);
+            int regionSize = limit.region.size();
             for (Point p : pointFactory.toPoints(limit.region)) {
-                if(!probability.containsKey(p) || probability.get(p) < limitProbability) {
+                Integer curSize = bestRegionSize.get(p);
+                if (curSize == null
+                        || regionSize < curSize
+                        || (regionSize == curSize && probability.get(p) < limitProbability)) {
                     probability.put(p, limitProbability);
+                    bestRegionSize.put(p, regionSize);
                 }
             }
         }
