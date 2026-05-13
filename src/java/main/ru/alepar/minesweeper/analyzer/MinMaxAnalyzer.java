@@ -66,7 +66,7 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
                     next.put(l.region, tightened);
                 }
             }
-            log.warn("shuffleLimitsOneIteration()#{} added {} limits", iteration, next.size());
+            log.trace("shuffleLimitsOneIteration()#{} added {} limits", iteration, next.size());
             iteration++;
             last = next;
         }
@@ -93,7 +93,7 @@ public class MinMaxAnalyzer implements ConfidentAnalyzer {
             }
         }
 
-        log.warn("shuffleLimitsOneIteration()#{} took {}ms, {} limits", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS), result.size());
+        log.trace("shuffleLimitsOneIteration()#{} took {}ms, {} limits", iteration, stopwatch.elapsed(TimeUnit.MILLISECONDS), result.size());
 
         if (writer != null) {
             try {
